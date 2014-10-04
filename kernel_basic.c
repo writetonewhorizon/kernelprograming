@@ -15,6 +15,7 @@ static int __init kernel_hello_init(void)
 static void __exit kernel_hello_exit(void)
 {
 	printk(KERN_INFO "Goodbye, kernel\n");
+	printk(KERN_INFO "Sorry, kernel conflict\n");
 }
 
 module_init(kernel_hello_init);
