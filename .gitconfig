@@ -1,0 +1,44 @@
+[alias]
+        st = status
+        ci = commit
+        co = checkout
+        br = branch
+        di = diff
+        visual = gitk
+        rmt = remote
+        l = log
+        cfg = config --global
+        de = describe
+        rmto = remote show origin
+        rmup = remote update
+        rb = rebase
+        rbc = rebase --continue
+        cia = commit -s --amend
+        ar = archive
+        f = fetch
+        po = push origin
+        rbi = rebase -i
+        dic = diff --cached
+        cis = commit -s
+        fo = fetch origin
+        com = checkout master
+        pg = push git-serv
+        rmtg = remote show git-serv
+        cp = cherry-pick
+        fg = fetch git-serv
+        lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+        lga = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all
+        b = branch
+        lg1 = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -10
+        lg2 = log --stat -p
+
+[diff]
+        color = auto
+[color]
+        ui = true
+[core]
+        editor = vim
+        filemode = false
+[user]
+        email = dharmender.sureshchander@in.bosch.com
+        name = dharmender suresh chander
