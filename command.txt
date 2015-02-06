@@ -1,0 +1,37 @@
+gernel commands :
+du -hs dir
+grep -nri string *
+find . -iname *str* | grep str
+find dir -iname file
+find dir -type f -perm 0777 -print -exec chmod 644 {} \;
+ps -aux
+sudo mount -o remount,rw /partition/identifier /mount/point
+
+related to git 
+git command --help
+git clone gitdir lodir
+git branch -a
+git checkout brname
+git pull
+git add file or dir
+git status
+git commit -a -s -m "message"
+git reset --hard <commit><HEAD>
+git log --pretty=oneline
+git log -p -1 hashvalue
+git log --oneline --decorate --graph --all
+git show pointer
+git format-patch -n <commit>
+git apply --stat patch
+git apply --check patch
+git am --signoff < patch
+gitk
+git diff commit1 commit2
+
+BSP
+1.git checkout -b branchname
+2.export PATH=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/:$PATH
+3.export ARCH=arm
+export CROSS_COMPILE=arm-none-linux-gnueabi-
+4. make configfile
+5 make -j8
