@@ -1,0 +1,289 @@
+Basic Requirements:
+	reescale Documentation
+		i.MX6q – http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=i.MX6Q
+	ARM Cross Compiler
+		Linaro: http://www.linaro.org/downloads/
+	Bootloader
+		Das U-Boot – the Universal Boot Loader http://www.denx.de/wiki/U-Boot
+		Source – http://git.denx.de/?p=u-boot.git;a=summary
+	Linux Kernel
+		Linus's Mainline tree: https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git
+		Freescale github bsp: https://github.com/Freescale
+		Freescale bsp: http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/
+	ARM based rootfs
+		Debian: https://www.debian.org/
+		Ubuntu: http://www.ubuntu.com
+LTB:
+http://www.element14.com/community/community/designcenter/single-board-computers/sabrelite/blog/2014/04/17/using-ltib-to-build-programs-for-sabre-lite-imx6
+
+comman link:
+	https://eewiki.net/display/linuxonarm/i.MX6x+SABRE+Lite
+
+helpfullbook:
+	http://cache.freescale.com/files/training/doc/dwf/DWF_LINUX_LABWORKBOOK.pdf
+
+ubbot:
+	http://boundarydevices.com/compiling-latest-u-boot-for-i-mx6/
+	Download this u-boot-imx6-master.zip source code and extact it.
+ 	search board specifcdefconfig  file in configsdiractory and use it to make bootloader.
+
+	Note: for arm specific code we need to cross compilation. so serch the arm toolchain binaries eg. arm-none-linux-gnueabi-
+
+	dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/u-boot/u-boot-imx6-master$ make -j8 ARCH=arm CROSS_COMPILE=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi- mx6qsabrelite_defconfig
+	dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/u-boot/u-boot-imx6-master$ make -j8 ARCH=arm CROSS_COMPILE=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi-
+
+	on sueccessfull compilation you wil get u-boot.bin and u-boot.imx file .
+	the u-boot.imx file will be copied in first bootable partition.
+
+
+kernel image :
+
+steps in particular:
+
+    LTIB should be considered a legacy toolkit, since the latest Freescale release is now based on tools from the Yocto Project, and
+    Recent Ubuntu releases have nice support for ARM cross-compilation, and
+    The 3.10.17 Linux kernel uses the Device Tree framework, and
+
+Cross Compiler and Tools
+As a result of the first two points, we now recommend these simple steps to install a cross-compiler:
+
+	
+~/$ sudo apt-get install gcc-arm-linux-gnueabihf
+~/$ ~$ arm-linux-gnueabihf-gcc -v
+Using built-in specs.
+COLLECT_GCC=arm-linux-gnueabihf-gcc
+COLLECT_LTO_WRAPPER=/usr/lib/gcc-cross/arm-linux-gnueabihf/4.8/lto-wrapper
+Target: arm-linux-gnueabihf
+...
+gcc version 4.8.2 (Ubuntu/Linaro 4.8.2-16ubuntu4)
+~/$ sudo apt-get install u-boot-tools
+~/$ which mkimage
+/usr/bin/mkimage
+Compilation
+This is clearly simpler than installing LTIB and configuring your PATH to point at the toolchain, and is sufficient to replace the arm-none-linux-gnueabi- from LTIB with arm-linux-gnueabihf-, but the process for a 3.0.35 kernel is essentially the same:
+
+	
+~/$ git clone git://github.com/boundarydevices/linux-imx6.git
+~/$ cd linux-imx6
+~/linux-imx6$ export ARCH=arm
+~/linux-imx6$ export CROSS_COMPILE=arm-linux-gnueabihf-
+~/linux-imx6$ git checkout boundary-imx_3.0.35_4.1.0
+~/linux-imx6$ make nitrogen6x_defconfig
+~/linux-imx6$ make uImage modules -j4
+As in the previous post, the output will be placed in ~/linux-imx6/arch/arm/boot/uImage.
+
+Module installation
+Also unchanged is the module installation process. To get a directory tree suitable for placement into a rootfs (that is, without any symlinks), you can install them into a temporary location as follows.
+
+~/linux-imx6$ make INSTALL_MOD_PATH=~/tmp modules_install
+~/linux-imx6$ find ~/tmp/lib/modules -type l -exec rm -f {} \;
+~/linux-imx6$ cp -ravf ~/tmp/lib/modules/* /media/myrootfs/lib/modules/
+Device Tree
+For kernels after 3.0.35, a couple of other wrinkles are added:
+
+    You’ll need to set the LOADADDR environment variable to 10008000, and
+    You’ll need to make the dtbs target and copy the Device Tree Binary files into your boot directory.
+
+The files *.dtb are placed in the arch/arm/boot/dts directory, so the following shows the complete process for kernel 3.10.17:
+
+	
+~/$ git clone git://github.com/boundarydevices/linux-imx6.git
+~/$ cd linux-imx6
+~/linux-imx6$ export ARCH=arm
+~/linux-imx6$ export CROSS_COMPILE=arm-linux-gnueabihf-
+~/linux-imx6$ export LOADADDR=10008000
+~/linux-imx6$ git checkout boundary-imx_3.10.17_1.0.0_ga
+~/linux-imx6$ make nitrogen6x_defconfig
+~/linux-imx6$ make uImage modules dtbs -j4
+~/linux-imx6$ cp -fv arch/arm/boot/uImage /media/myboot/
+~/linux-imx6$ cp -fv arch/arm/boot/dts/*.dtb /media/myboot/
+~/linux-imx6$ make INSTALL_MOD_PATH=~/tmp modules_install
+~/linux-imx6$ find ~/tmp/lib/modules -type l -exec rm -f {} \;
+~/linux-imx6$ cp -ravf ~/tmp/lib/modules/* /media/myrootfs/lib/modules/
+Note that depending on your O/S distribution, the uImage and *.dtb files may go in the root of a partition (Yocto, Buildroot, Timesys, OpenWRT), or into the /boot directory (Debian, Ubuntu). The key is to match the boot script.
+Notes if switching versions
+If you’re switching from the 3.0.35 to 3.10.17 kernel versions within the same tree, you’ll need to delete include/linux/version.h from your tree, or you’ll get mysterious error messages about missing mach/hardware.h while compiling gc_hal_kernel_device.c.
+
+
+my steps:
+
+	http://boundarydevices.com/cross-compiling-kernels-2014-edition/
+	download any stable linux kernel and configure it or cross compile it according to arm.
+
+now find the config file in /arch/arm/config/.
+
+~/gitweb/freescale/kernel/linux-3.17.2/arch/arm/configs$ imx_v6_v7_defconfig
+
+dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/kernel/linux-3.17.2$ make -j8 ARCH=arm CROSS_COMPILE=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi- imx_v6_v7_defconfig
+noe .config file will genrate.
+
+dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/kernel/linux-3.17.2$ make -j8 ARCH=arm CROSS_COMPILE=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi- LOADADDR=0x12000000 uImage
+
+  CHK     include/config/kernel.release
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+make[1]: `include/generated/mach-types.h' is up to date.
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  Kernel: arch/arm/boot/Image is ready
+  Kernel: arch/arm/boot/zImage is ready
+  UIMAGE  arch/arm/boot/uImage
+Image Name:   Linux-3.17.2
+Created:      Thu Nov  6 09:53:56 2014
+Image Type:   ARM Linux Kernel Image (uncompressed)
+Data Size:    4035160 Bytes = 3940.59 kB = 3.85 MB
+Load Address: 12000000
+Entry Point:  12000000
+  Image arch/arm/boot/uImage is ready
+
+dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/kernel/linux-3.17.2$ ls arch/arm/boot/
+bootp  compressed  dts  Image  install.sh  Makefile  uImage  zImage
+dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/kernel/linux-3.17.2$ ls -al arch/arm/boot/
+total 15756
+drwxrwxr-x  5 dus5cob dus5cob    4096 Nov  6 09:53 .
+drwxrwxr-x 86 dus5cob dus5cob    4096 Oct 30 17:43 ..
+drwxrwxr-x  2 dus5cob dus5cob    4096 Oct 30 17:43 bootp
+drwxrwxr-x  2 dus5cob dus5cob    4096 Nov  5 11:33 compressed
+drwxrwxr-x  3 dus5cob dus5cob   65536 Nov  5 11:36 dts
+-rw-rw-r--  1 dus5cob dus5cob      46 Oct 30 17:43 .gitignore
+-rwxrwxr-x  1 dus5cob dus5cob 7951284 Nov  5 11:33 Image
+-rw-rw-r--  1 dus5cob dus5cob     179 Nov  5 11:33 .Image.cmd
+-rw-rw-r--  1 dus5cob dus5cob    1648 Oct 30 17:43 install.sh
+-rw-rw-r--  1 dus5cob dus5cob    3148 Oct 30 17:43 Makefile
+-rw-rw-r--  1 dus5cob dus5cob 4035224 Nov  6 09:53 uImage
+-rw-rw-r--  1 dus5cob dus5cob     183 Nov  6 09:53 .uImage.cmd
+-rwxrwxr-x  1 dus5cob dus5cob 4035160 Nov  5 11:33 zImage
+-rw-rw-r--  1 dus5cob dus5cob     206 Nov  5 11:33 .zImage.cmd
+
+also genrate .dtb it nessecerry because uImage will use it during booting.
+
+
+Note :you need uImage and .dtb file to copy in first partition and also u-boot.imx for uboot.
+
+
+buildroot has these package:
+http://boundarydevices.com/buildroot-for-i-mx5-and-i-mx6/
+dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/rootfs/buildroot-2014.08/dl$ ls -al
+
+-rwxrwxr-x  1 dus5cob dus5cob    65191 Nov  6 07:41 autossh-1.4c.tgz
+-rw-rw-r--  1 dus5cob dus5cob 19973532 Nov  6 07:41 binutils-2.22.tar.bz2
+-rwxrwxr-x  1 dus5cob dus5cob  3939766 Nov  6 07:41 buildroot-2014.08.tar.gz
+-rwxrwxr-x  1 dus5cob dus5cob  2218650 Nov  6 07:41 busybox-1.22.1.tar.bz2
+-rwxrwxr-x  1 dus5cob dus5cob   303775 Nov  6 07:41 fakeroot_1.18.2.orig.tar.bz2
+-rwxrwxr-x  1 dus5cob dus5cob 86126808 Nov  6 07:41 gcc-4.8.3.tar.bz2
+-rwxrwxr-x  1 dus5cob dus5cob  1904112 Nov  6 07:41 gmp-6.0.0a.tar.xz
+-rwxrwxr-x  1 dus5cob dus5cob 80487456 Nov  6 09:15 linux-3.16.1.tar.xz
+-rwxrwxr-x  1 dus5cob dus5cob  1149088 Nov  6 07:41 m4-1.4.17.tar.xz
+-rwxrwxr-x  1 dus5cob dus5cob   633173 Nov  6 07:41 mpc-1.0.2.tar.gz
+-rwxrwxr-x  1 dus5cob dus5cob  1074388 Nov  6 07:41 mpfr-3.1.2.tar.xz
+-rwxrwxr-x  1 dus5cob dus5cob  1282502 Nov  6 07:41 openssh-6.6p1.tar.gz
+-rwxrwxr-x  1 dus5cob dus5cob  4422117 Nov  6 07:41 openssl-1.0.1i.tar.gz
+-rwxrwxr-x  1 dus5cob dus5cob    98362 Nov  6 07:41 sshpass-1.05.tar.gz
+-rwxrwxr-x  1 dus5cob dus5cob  2236640 Nov  6 07:41 uClibc-0.9.33.2.tar.xz
+-rwxrwxr-x  1 dus5cob dus5cob   450776 Nov  6 07:41 zlib-1.2.8.tar.xz
+
+steps:
+Grab the latest snapshot
+~/$ wget http://buildroot.org/downloads/buildroot-2012.08.tar.gz
+~/$ tar zxvf buildroot-2012.08.tar.gz
+Configure for i.MX
+~/$ cd buildroot-2012.08
+~/buildroot-2012.08$ make menuconfig
+Using the kconfig interface, I chose:
+
+    Target ARM (Little-Endian)
+    Target Cortex A-8
+    Under toolchain: enable large file support and WCHAR
+    Under System Configuration, chose ttymxc1 as the “Port to run a getty (login prompt) on”,
+    Under Package Selection:Hardware, enabled dosfstools and e2fsprogs
+    Under Filesystem Images, selected Output cpio - gzipped
+
+Please read for a nice (and short) guide to usage. In particular, pay attention to this one:
+~/buildroot-2012.08$ make busybox-menuconfig
+After making those selections, a simple make resulted in a gzipped cpio archive.
+Build the image
+~/buildroot-2012.08$ make
+~/buildroot-2012.08$ ls -l ./output/images/rootfs.cpio.gz
+-rw-r--r-- 1 user group 1380949 2012-09-11 13:09 ./output/images/rootfs.cpio.gz
+Less than 1.4MB for a working filesystem image with the tools I needed. Very nice!
+
+Wrap it for U-Boot
+In order to boot this using the 2-parameter U-Boot bootm command, all that was left is to wrap it up:
+~/buildroot-2012.08$ mkimage -A arm -O linux -T ramdisk -n "Initial Ram Disk" \
+          -d output/images/rootfs.cpio.gz uramdisk.img
+Image Name:   Initial Ram Disk
+Created:      Tue Sep 11 15:26:51 2012
+Image Type:   ARM Linux RAMDisk Image (gzip compressed)
+Data Size:    1380949 Bytes = 1348.58 kB = 1.32 MB
+Load Address: 0x00000000
+Entry Point:  0x00000000
+And boot it
+I booted this on an i.MX6 by hand by placing it and a kernel on an SD card like so:
+MX6Q SABRELITE U-Boot > mmc dev 0
+MX6Q SABRELITE U-Boot > fatload mmc 0 12000000 uImage
+reading uImage
+3837484 bytes read
+MX6Q SABRELITE U-Boot > fatload mmc 0 12500000 uramdisk.img
+reading uramdisk.img
+1381013 bytes read
+MX6Q SABRELITE U-Boot > bootm 12000000 12500000
+## Booting kernel from Legacy Image at 12000000 ...
+   Image Name:   Linux-3.0.35-1968-gd3f7f36-02004
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    3837420 Bytes =  3.7 MB
+   Load Address: 10008000
+   Entry Point:  10008000
+   Verifying Checksum ... OK
+## Loading init Ramdisk from Legacy Image at 12500000 ...
+   Image Name:   Initial Ram Disk
+   Image Type:   ARM Linux RAMDisk Image (gzip compressed)
+   Data Size:    1380949 Bytes =  1.3 MB
+   Load Address: 00000000
+   Entry Point:  00000000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+OK
+ 
+Starting kernel ...
+ 
+Uncompressing Linux... done, booting the kernel.
+...
+ 
+Welcome to Buildroot
+buildroot login: root
+# 
+
+my followed steps :
+
+Grab the latest snapshot
+~/$ wget http://buildroot.org/downloads/buildroot-2012.08.tar.gz
+~/$ tar zxvf buildroot-2012.08.tar.gz
+Configure for i.MX
+~/$ cd buildroot-2012.08
+dus5cob@g3gdev-dus5cob-1:~/gitweb/freescale/rootfs/buildroot-2014.08$ ls
+arch  board  boot  CHANGES  Config.in  Config.in.legacy  configs  COPYING  dl  docs  fs  linux  Makefile  Makefile.legacy  output  package  README  support  system  toolchain
+
+now see the default configuration file and amke it using below command then you will get .config file :
+~/gitweb/freescale/rootfs/buildroot-2014.08$ cd configs/
+
+~/gitweb/freescale/rootfs/buildroot-2014.08/configs$ make -j8 -s ARCH=arm CROSS_COMPILE=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi- freescale_imx6sabresd_defconfig
+
+~/gitweb/freescale/rootfs/buildroot-2014.08/configs$ make -j8 -s ARCH=arm CROSS_COMPILE=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi-
+
+error:
+--2014-11-06 09:08:57--  https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.16.1.tar.xz
+Resolving localhost (localhost)... 127.0.0.1
+Connecting to localhost (localhost)|127.0.0.1|:3128... connected.
+Proxy tunneling failed: Proxy Authentication RequiredUnable to establish SSL connection.
+--2014-11-06 09:08:59--  http://sources.buildroot.net/linux-3.16.1.tar.xz
+Resolving localhost (localhost)... 127.0.0.1
+Connecting to localhost (localhost)|127.0.0.1|:3128... connected.
+Proxy request sent, awaiting response... 407 Proxy Authentication Required
+2014-11-06 09:09:00 ERROR 407: Proxy Authentication Required.
+
+download this linux-3.16.1.tar.xz file menually and put in dl diractory.
+
+sd card partition :
+	http://elinux.org/BeagleBoardBeginners
+	use gparted and fdisk tool for partition.
+
