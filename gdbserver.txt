@@ -1,0 +1,108 @@
+in target or LSIM to perform :
+
+In ubuntu :
+ssh root@172.17.0.10 "mount -o remount,rw /"
+scp ~/sigtrap/Debug/sigtrap root@172.17.0.10:/home/root
+ssh root@172.17.0.10
+
+In LSIM:
+cd ~
+gdbserver :2345 sigtrap
+or
+
+cd ~
+./sigtrap &
+gdbserver --attach :2345 $(pidof sigtrap)
+
+In ubuntu machine step to perform :
+/opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/bin/i686-bosch-linux-gnu-gdb32 sigtrap
+gdb> target remote 172.17.0.10:2345
+gdb> set solib-search-path /opt/tooling/imx6-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_13.0F37/lib/
+gdb> set sysroot /opt/tooling/imx6-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_13.0F37/
+gdb> set verbose on
+gdb> b 6
+gdb> continue
+gdb> bt
+
+eg:
+avg2cob@cob1014961_Ubuntu1004:~/tasks/2014/gdb_exit/sigtrap/Debug$ /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/bin/i686-bosch-linux-gnu-gdb32 sigtrap
+GNU gdb (crosstool-NG 1.19.0) 7.2
+Copyright (C) 2010 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "--host=i686-build_pc-linux-gnu --target=i686-bosch-linux-gnu".
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>...
+Reading symbols from /home/avg2cob/tasks/2014/gdb_exit/sigtrap/Debug/sigtrap...done.
+(gdb) target remote 172.17.0.10:2345
+Remote debugging using 172.17.0.10:2345
+warning: Could not load shared library symbols for /lib/libstdc++.so.6.
+Do you need "set solib-search-path" or "set sysroot"?
+Reading symbols from /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libpthread.so.0...done.
+Loaded symbols for /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libpthread.so.0
+Reading symbols from /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libm.so.6...done.
+Loaded symbols for /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libm.so.6
+Reading symbols from /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libgcc_s.so.1...done.
+Loaded symbols for /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libgcc_s.so.1
+Reading symbols from /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libc.so.6...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/libc.so.6
+Reading symbols from /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/ld-linux.so.2...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/i686-bosch-linux-gnu/libc/lib/ld-linux.so.2
+0xffffe424 in __kernel_vsyscall ()
+Created trace state variable $trace_timestamp for target's variable 1.
+(gdb) set solib-search-path /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib
+Reading symbols from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libstdc++.so.6...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libstdc++.so.6
+(gdb) set sysroot /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86
+Reading symbols from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libpthread.so.0...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libpthread.so.0
+Reading symbols from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libm.so.6...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libm.so.6
+Reading symbols from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libgcc_s.so.1...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libgcc_s.so.1
+Reading symbols from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libc.so.6...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libc.so.6
+Reading symbols from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/ld-linux.so.2...(no debugging symbols found)...done.
+Loaded symbols for /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/ld-linux.so.2
+(gdb) set verbose on
+(gdb) b 22
+Reading in symbols for ../sigtrap.cpp...done.
+Reading in symbols for ../sigtrap.cpp...done.
+Breakpoint 1 at 0x8048641: file ../sigtrap.cpp, line 22.
+(gdb) step
+Single stepping until exit from function __kernel_vsyscall,
+which has no line number information.
+0xb76cc8c6 in nanosleep () from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libc.so.6
+(gdb) step
+Single stepping until exit from function nanosleep,
+which has no line number information.
+0xb76cc6de in sleep () from /opt/tooling/rootfs/DI_BINARY_REPOSITORY_NEMID_LINUX_14.0F41.x86/lib/libc.so.6
+(gdb) step
+Single stepping until exit from function sleep,
+which has no line number information.
+main (argc=<value optimized out>, argv=<value optimized out>) at ../sigtrap.cpp:42
+42	        printChar('.');
+(gdb) step
+printChar (c=46 '.') at ../sigtrap.cpp:12
+12	    printf("%c", c);
+(gdb) step
+Reading in symbols for /tmp/ccwDJBxP.s...done.
+13	    fflush(stdout);
+(gdb) step
+14	}
+(gdb) step
+main (argc=<value optimized out>, argv=<value optimized out>) at ../sigtrap.cpp:39
+39	    while (1)
+(gdb) step
+41	        sleep(10);
+(gdb) step
+^[[A
+
+Program terminated with signal SIGTRAP, Trace/breakpoint trap.
+The program no longer exists.
+(gdb) step
+The program is not being run.
+(gdb) 
+
