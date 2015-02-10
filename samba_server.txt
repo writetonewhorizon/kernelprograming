@@ -1,0 +1,80 @@
+samba server creation:
+samba server is used to share the ubuntu files to window side
+
+So to use samba server please follow this link :
+http://xmodulo.com/samba-file-server-windows-clients.html
+
+
+So first in ubuntu we need to install samba :
+
+Use sudo apt-get install samba
+And Add users who can access your shares with the 'smbpasswd' command. 
+sudo  smbpasswd -a username
+New SMB password:
+Retype new SMB password:
+Added user username.
+
+And please check the share file path in the end of  /etc/samba/smb.conf file.
+You can mention path according to your choice
+Eg 
+
+[dus5cob_winshare]
+path = /home/dus5cob/winshare
+writeable = yes
+;browseable = yes
+valid users = dus5cob
+
+[dus5cob_samba]
+path = /home/dus5cob/samba
+writeable = yes
+;browseable = yes
+valid users = dus5cob
+
+please update path in virtualbox machine also .
+
+window side do these things :
+
+Mapping the Samba Share as a Network Drive on a Windows 7 PC
+Right click on Computer, and select "Map network drive":
+
+type ifconfig -a into ubuntu and check the ip address
+
+Type the IP address of the ubuntu machine where Samba is installed, followed by the name of the share (this is the name that is enclosed between single brackets in the smb.conf file), and make sure that the "Connect using different credentials" checkbox is checked:
+eg \\172.17.0.6\dus5cob_samba
+
+you can assign ethier static or dynamic address.
+Note : if you assign dynamic then you have to chnage it again but if you assign staic then no need to change it forever.
+
+Now you can create clearcase view directly to samba server .
+And can build in ubuntu machine on this path
+/home/userid/samba/views
+
+
+how to make an ip address static
+
+#My IP description
+# IPv4 address
+cat /etc/network/interfaces and 
+auto eth0
+iface eth0 inet static
+     address 192.168.1.10
+     network 192.168.1.0
+     netmask 255.255.255.0
+     broadcast 192.168.1.255
+     gateway 192.168.1.254
+DNS can be added in the file /etc/resolv.conf 
+nameserver	8.8.8.8 
+nameserver	8.8.4.4
+Note : DNS entries with the debian system will only works if resolvconf is not installed. If resolvconf is installed then you need to append the DNS entries in the file /etc/network/interfaces only as follows:
+nameserver	8.8.8.8 
+nameserver	8.8.4.4
+
+You can check whether resolvconf is installed or not by 
+dpkg -l | grep resolvconf
+
+After any change in the networking files you need to restart the network services as follows:
+/etc/init.d/networking restart
+
+now check ip address
+ifconfg -a
+
