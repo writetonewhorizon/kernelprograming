@@ -1,0 +1,169 @@
+
+Build linux system for virtual machine
+
+setting up the host machine
+Install Linux OS in host PC
+
+Install Ubuntu in host PC.
+Install GNU Tool-chain
+
+Run the commands
+
+sudo apt-get install gcc
+sudo apt-get install make
+
+Install other required tools
+
+sudo apt-get install qemu
+sudo apt-get install kpartx
+sudo apt-get install grub
+sudo apt-get install make
+sudo apt-get install libncurses5-dev
+sudo apt-get install bison
+sudo apt-get install flex
+sudo apt-get install texinfo
+
+Build Kernel and root file system
+
+git clone git://git.buildroot.net/buildroot
+cd buildroot
+make menuconfig
+
+Change the options to
+
+    Bootloaders -> grub -> [*]
+    Kernel -> Linux Kernel -> [*]
+    Kernel -> Install kernel image to /boot in target -> [*]
+    Kernel -> Defconfig name -> [i386]
+    Toolchain -> Enable large file (files > 2 GB) support -> [*] 
+
+make
+cd ..
+
+Once the build is completed the rootfs image will be available at ./buildroot/output/images/rootfs.tar
+Create hard-disk image for Virtual Machine
+Create the raw disk image
+
+qemu-img create -f raw harddisk.img 8G
+
+Partition the raw disk image
+
+Attach the raw image to a loopback device
+
+sudo losetup -d /dev/loop0
+sudo losetup /dev/loop0 harddisk.img
+
+Format the disk now
+
+sudo fdisk /dev/loop0
+
+Command (m for help): n
+Command action
+   e   extended
+   p   primary partition (1-4)
+p
+Partition number (1-4, default 1): 1
+First sector (2048-16777215, default 2048): 
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-16777215, default 16777215): 
+Using default value 16777215
+
+Command (m for help): a
+Partition number (1-4): 1
+
+Command (m for help): p
+
+Disk /dev/loop0: 8589 MB, 8589934592 bytes
+255 heads, 63 sectors/track, 1044 cylinders, total 16777216 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x85605713
+
+      Device Boot      Start         End      Blocks   Id  System
+/dev/loop0p1   *        2048    16777215     8387584   83  Linux
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+
+WARNING: Re-reading the partition table failed with error 22: Invalid argument.
+The kernel still uses the old table. The new table will be used at
+the next reboot or after you run partprobe(8) or kpartx(8)
+Syncing disks.
+
+Map the partitions with kpartx
+
+sudo kpartx -a /dev/loop0
+
+Format the partition. Here we use ext3 filesystem.
+
+sudo mkfs.ext3 /dev/mapper/loop0p1
+
+Copy the filesystem content to hard-disk image
+
+Mount the created partition to the directory rootfs
+
+mkdir rootfs
+sudo mount /dev/mapper/loop0p1 rootfs
+
+Extract the root file system content to this partition
+
+sudo tar -xvf buildroot/output/images/rootfs.tar -C rootfs/
+
+Unmount and detach the device
+
+sudo umount rootfs
+sudo kpartx -d /dev/loop0
+sudo losetup -d /dev/loop0
+
+Install grub into the harddisk image
+
+-Note: patch work To be fixed-
+
+sudo losetup /dev/loop0 harddisk.img
+sudo kpartx -a /dev/loop0
+sudo mount /dev/mapper/loop0p1 rootfs
+sudo rm -rf rootfs/boot/grub/*
+sudo cp /usr/lib/grub/i386-pc/stage1 /usr/lib/grub/i386-pc/stage2 rootfs/boot/grub/
+sudo umount rootfs
+sudo kpartx -d /dev/loop0
+sudo losetup -d /dev/loop0
+
+-End of patch work-
+
+run the command
+
+grub --device-map=/dev/null
+
+Enter following commands at grub> prompt
+
+device (hd0) harddisk.img
+root (hd0,0)
+setup (hd0)
+quit
+
+Convert raw harddisk image to vmdk format
+
+qemu-img convert -f raw -O vmdk harddisk.img harddisk.vmdk -o compat6
+
+Copy the file harddisk.vmdk to location where virtual machine can access.
+Setup virtual machine
+
+Setup virtual machine with "harddisk.vmdk" harddisk image.
+
+Boot the system
+Start the virtual machine. Grub prompt will be displayed now. Run the following commands to boot our linux
+
+kernel /boot/bzImage root=/dev/sda1 init=/bin/sh
+boot
+
+You will get the Linux bash prompt
+
+Notes
+temp notes pasted here
+
+/etc/inittab
+
+T1:23:respawn:/sbin/getty -L ttymxc1 115200 vt102
