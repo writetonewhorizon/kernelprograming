@@ -1,3 +1,5 @@
+http://linuxconfig.org/how-to-configure-nfs-on-linux
+
 nfs is used to sharing data from one machine to other machine locally
 step to do in host machine ie nfs server:
 sudo apt-get install nfs-kernel-server
