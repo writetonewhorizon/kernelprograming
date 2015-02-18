@@ -33,3 +33,8 @@ http://www.opensourceforu.com/2010/12/kernel-tracing-with-ftrace-part-2/
 http://www.opensourceforu.com/2010/10/debugging-linux-kernel-with-debugfs/
 http://www.opensourceforu.com/2009/05/a-voyage-to-the-kernel-day-11/
 http://www.opensourceforu.com/2010/09/user-mode-linux-setup-and-debug/
+http://www.ibm.com/developerworks/library/l-lpic1-v3-102-2/
+https://www.ibm.com/developerworks/community/blogs/58e72888-6340-46ac-b488-d31aa4058e9c/entry/exploring_the_linux_storage_path_tracing_block_i_o_kernel_events?lang=en
+http://lwn.net/Articles/322666/
+http://lwn.net/Articles/365835/
+http://lwn.net/Articles/366796/
