@@ -1,0 +1,80 @@
+nfs is used to sharing data from one machine to other machine locally
+step to do in host machine ie nfs server:
+sudo apt-get install nfs-kernel-server
+
+edit Vim /etc/exports
+add these line
+directory machine1(option11,option12) machine2(option21,option22)
+eg.  /home/vpa8cob/Desktop/mnt *(rw,no_root_squash,sync,no_subtree_check)
+/home/dus5cob/nfsshare *(rw,sync,no_subtree_check)
+/home/dus5cob/samba *(rw,sync,no_subtree_check)
+/opt/tooling/ 172.17.0.1/255.255.0.0(rw,no_root_squash,sync,no_subtree_check)
+
+sudo /etc/init.d/nfs-kernel-server restart
+
+
+step to do in guest machine ie in nfs client :
+Mounting remote directories
+mount 172.17.0.6:/home/vpa8cob/Desktop/mnt /mnt/
+
+explanation :
+diractory > 
+the directory that you want to share. It may be an entire volume though it need not be. If you share a directory, 
+then all directories under it within the same file system will be shared as well.
+
+machine1 and machine2 >
+client machines that will have access to the directory. ie ip addresses
+
+optionxx
+
+the option listing for each machine will describe what kind of access that machine will have. Important options are:
+
+ ro: The directory is shared read only; the client machine will not be able to write to it. This is the default.
+
+ rw: The client machine will have read and write access to the directory.
+
+ no_root_squash: By default, any file request made by user root on the client machine is treated as if it is made by user nobody on the server. 
+ (Excatly which UID the request is mapped to depends on the UID of user "nobody" on the server, not the client.) If no_root_squash is selected,
+ then root on the client machine will have the same level of access to the files on the system as root on the server. 
+ This can have serious security implications, although it may be necessary if you want to perform any administrative work on the client machine that involves the exported directories.
+ You should not specify this option without a good reason.
+
+ no_subtree_check: If only part of a volume is exported, a routine called subtree checking verifies that a file that is requested from the client is in the appropriate part of the volume.
+ If the entire volume is exported, disabling this check will speed up transfers.
+
+ sync: By default, all but the most recent version (version 1.11) of the exportfs command will use async behavior, telling a client machine that a file write is complete -
+ that is, has been written to stable storage - when NFS has finished handing the write over to the filesysytem. 
+This behavior may cause data corruption if the server reboots,and the sync option prevents this. See Section 5.9 for a complete discussion of sync and async behavior. 
+
+Verifying that NFS is running
+ rpcinfo -p
+ 
+ Getting NFS File Systems to Be Mounted at Boot Time
+ NFS file systems can be added to your /etc/fstab file the same way local file systems can, so that they mount when your system starts up
+ vim /etc/fstab
+ 
+ add these line 
+    # device       mountpoint     fs-type     options      dump fsckorder
+   ...
+   master.foo.com:/home  /mnt    nfs          rw            0    0
+   ...
+eg   
+my fstab file
+vim /etc/fstab
+ # /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+proc            /proc           proc    nodev,noexec,nosuid 0       0
+# / was on /dev/sda1 during installation
+UUID=d3372e97-ed10-4158-9e6e-57d9241fb48d /               ext4    errors=remount-ro 0       1
+# swap was on /dev/sda5 during installation
+UUID=aa023a28-3ec9-4530-ad00-7f09016c47aa none            swap    sw              0       0
+
+UUID=cc0e859d-637e-4868-b63e-9822ee9877bc   /home   ext4    errors=remount-ro   0   1
+vmshare /home/dus5cob/vmshare   vboxsf  rw,uid=dus5cob,gid=dus5cob  0   0
+#views  /mnt/views  vboxsf  rw,uid=dus5cob,gid=dus5cob  0   0
+ ccstg  /mnt/ccstg  vboxsf  rw,uid=dus5cob,gid=dus5cob  0   0
