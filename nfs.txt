@@ -1,4 +1,5 @@
 http://linuxconfig.org/how-to-configure-nfs-on-linux
+http://computernetworkingnotes.com/network-administrations/nfs-server.html
 
 nfs is used to sharing data from one machine to other machine locally
 step to do in host machine ie nfs server:
