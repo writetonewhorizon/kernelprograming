@@ -1,10 +1,13 @@
 gernel commands :
+df -ah
 du -hs dir
 grep -nri string *
 find . -iname *str* | grep str
 find dir -iname file
 find dir -type f -perm 0777 -print -exec chmod 644 {} \;
-ps -aux
+ps -auxf
+wheris and whatis
+ln -s targetfile linkname
 sudo mount -o remount,rw /partition/identifier /mount/point
 
 related to git 
@@ -35,3 +38,71 @@ BSP
 export CROSS_COMPILE=arm-none-linux-gnueabi-
 4. make configfile
 5 make -j8
+
+run time debugging
+
+strace -e open ls
+lsof | more
+htop 
+ps -auxf
+readelf
+nm
+size
+objdump
+ltrace
+strings
+strip
+ld
+file
+ldd
+ldd $(which nm)
+to get debugging help
+LD_DEBUG=help  dynamic executable
+to get all info
+LD_DEBUG=all  dynamic executable
+LD_DEBUG=libs,versions testApp -m
+to take output in a file
+LD_DEBUG_OUTPUT=sym.log LD_DEBUG=bindings  dynamic executable 
+
+
+gdb thread debugging
+
+gcc -g -o executable name filename  -lpthread
+./exectablename
+ps -aux | grep executable name
+gdb -pid pidnumber 
+
+Table 1. Most commonly used commands for gdb
+Command	Description	Example
+help			List classes of commands	help - to list classes of commands
+help breakpoints - 		list commands belonging to breakpoints class
+help break - 		description of break command
+run				Start the debugged program	 
+kill			Kill execution of program being debugged	Usually it is used when the execution line has been passed where the code you want to debug. Issue kill, reset the breakpoints, and run the program again to start over.
+		
+cont			Continue execution of the debugged application after a breakpoint, exception, or step.	 
+info break		Display the current breakpoints or watchpoints.	 
+break			Set breakpoint at specified line or function	break 93 if i=8 - to stop the program execution at line 93 when the variable i is equal to 8.
+Step			Step the program until it reaches a different source line. You can use s to abbreviate the step command.	 
+Next			Like the step command, except it does not "step into" subroutines	 
+print			Print the value of a variable or an expression	print pointer - print the content of variable pointer.
+print *pointer - 		print the content of the data structure the pointer is pointing to.
+delete			Delete some breakpoints or auto-display expressions	delete 1 - to delete breakpoint number 1. The breakpoints can be displayed by info break.
+watch			Set a watchpoint for an expression. A watchpoint stops execution of your program whenever the value of an expression changes.	 
+where			Print backtrace of all stack frames	where - with no arguments, dumps the stack of the current thread.
+where all - 		dumps the stack of all threads in the current thread group.
+where threadindex - 		dumps the stack of the specified thread.
+attach			Start viewing an already running process	attach <process_id> - attach the process with process_id. process_id can be found by the ps command.
+info thread		Show currently running threads	 
+thread apply threadno command			Run gdb command on a thread	thread apply 3 where - run the where command on the thread 3
+Thread threadno			Select a thread to be the current thread
+
+valgrind
+ g++ -g -Wall -Wextra -pedantic test1.cpp -o test1
+valgrind -v --tool=memcheck --leak-check=yes --leak-check=full --show-reachable=yes --num-callers=20 --track-fds=yes --track-origins=yes --num-callers=50 --db-attach=yes  ./test
+
+shared library creation:
+
+g++ -ggdb -fPIC -shared lib.cpp -o libTest.so
+g++ -ggdb main.cpp libTest.so -o testApp -Wl,--rpath='$ORIGIN'
+
