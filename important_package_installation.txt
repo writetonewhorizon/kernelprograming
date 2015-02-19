@@ -90,6 +90,9 @@ http://www.noobslab.com/2014/02/xtreme-download-manager-updated-and.html
 skype
 go to skype.org and download skype as ubuntu software center and then go to ubuntu software center and install it
 
+game
+sudo apt-get install kreversi
+
 
 
 
