@@ -37,6 +37,8 @@ sudo apt-get install exuberant-ctags
 sudo apt-get install cscope
 sudo apt-get install nfs-kernel-server 
 sudo apt-get install openssh-server openssh-client
+sudo apt-get install samba
+sudo apt-get install git gitk meld 
 
 virtual box
 sudo sh -c "echo 'deb http://download.virtualbox.org/virtualbox/debian '$(lsb_release -cs)' contrib non-free' > 
