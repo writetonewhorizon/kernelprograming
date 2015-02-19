@@ -56,7 +56,11 @@ Installation of SMPlayer 14.3.0 Media Player
  sudo apt-get update
  sudo apt-get install smplayer smtube smplayer-themes
  
- music player
+ sudo add-apt-repository ppa:pcf/miro-releases 
+ sudo apt-get update 
+ sudo apt-get install miro
+ 
+music player
 sudo add-apt-repository ppa:fossfreedom/rhythmbox-plugins
 sudo apt-get update
 sudo apt-get install rhythmbox-plugin-complete
