@@ -1,8 +1,12 @@
 https://wiki.archlinux.org/index.php/systemd
+https://activedoc.opensuse.org/book/opensuse-reference/chapter-8-the-systemd-daemon
 
 Analyzing the system state
 List running units
 $ systemctl  or $ systemctl list-units
+
+Syntax :
+systemctl reload|restart|start|status|stop|... <my_service(s)>.service
 
 List failed units: 
 $ systemctl --failed
