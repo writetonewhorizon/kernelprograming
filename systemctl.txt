@@ -1,0 +1,171 @@
+https://wiki.archlinux.org/index.php/systemd
+
+Analyzing the system state
+List running units
+$ systemctl  or $ systemctl list-units
+
+List failed units: 
+$ systemctl --failed
+
+list of the installed unit files
+$ systemctl list-unit-files
+
+Start a unit immediately: 
+# systemctl start unit
+
+Stop a unit immediately:
+# systemctl stop unit
+
+Restart a unit:
+# systemctl restart unit
+
+Ask a unit to reload its configuration:
+# systemctl reload unit
+
+Show the status of a unit, including whether it is running or not:
+$ systemctl status unit
+
+Check whether a unit is already enabled or not:
+$ systemctl is-enabled unit
+
+Enable a unit to be started on bootup:
+# systemctl enable unit
+
+Disable a unit to not start during bootup:
+# systemctl disable unit
+
+Show the manual page associated with a unit (this has to be supported by the unit file):
+$ systemctl help unit
+
+Reload systemd, scanning for new or changed units:
+# systemctl daemon-reload
+
+Timers
+
+A timer is a unit configuration file whose name ends with .timer and encodes information about a timer controlled and supervised by systemd, for timer-based activation. See systemd/Timers.
+Note: Timers can replace cron functionality to a great extent. See systemd/Timers#As a cron replacement.
+Journal
+
+systemd has its own logging system called the journal; therefore, running a syslog daemon is no longer required. To read the log, use:
+
+# journalctl
+
+In Arch Linux, the directory /var/log/journal/ is a part of the systemd package, and the journal (when Storage= is set to auto in /etc/systemd/journald.conf) will write to /var/log/journal/. 
+If you or some program delete that directory, systemd will not recreate it automatically; however, it will be recreated during the next update of the systemd package. 
+Until then, logs will be written to /run/systemd/journal, and logs will be lost on reboot.
+
+Filtering output
+journalctl allows you to filter the output by specific fields. Be aware that if there are many messages to display or filtering of large time span has to be done, the output of this command can be delayed for quite some time.
+Tip: While the journal is stored in a binary format, the content of stored messages is not modified. This means it is viewable with strings, for example for recovery in an environment which does not have systemd installed. Example command:
+
+$ strings /mnt/arch/var/log/journal/af4967d77fba44c6b093d0e9862f6ddd/system.journal | grep -i message
+
+Show all messages from this boot:
+# journalctl -b
+
+However, often one is interested in messages not from the current, but from the previous boot (e.g. if an unrecoverable system crash happened). This is possible through optional offset parameter of the -b flag: journalctl -b -0 shows 
+messages from the current boot, journalctl -b -1 from the previous boot, journalctl -b -2 from the second previous and so on. See man 1 journalctl for full description, the semantics is much more powerful.
+
+ Follow new messages:
+# journalctl -f
+
+Show all messages by a specific executable:
+# journalctl /usr/lib/systemd/systemd
+
+Show all messages by a specific process:
+# journalctl _PID=1
+
+Show all messages by a specific unit:
+# journalctl -u netcfg
+
+Show kernel ring buffer:
+# journalctl -k
+
+Show auth.log equivalent by filtering on syslog facility:
+# journalctl -f -l SYSLOG_FACILITY=10
+
+Troubleshooting
+Investigating systemd errors
+
+As an example, we will investigate an error with systemd-modules-load service:
+
+1. Lets find the systemd services which fail to start:
+
+$ systemctl --state=failed
+
+systemd-modules-load.service   loaded failed failed  Load Kernel Modules
+
+2. Ok, we found a problem with systemd-modules-load service. We want to know more:
+
+$ systemctl status systemd-modules-load
+
+systemd-modules-load.service - Load Kernel Modules
+   Loaded: loaded (/usr/lib/systemd/system/systemd-modules-load.service; static)
+   Active: failed (Result: exit-code) since So 2013-08-25 11:48:13 CEST; 32s ago
+     Docs: man:systemd-modules-load.service(8).
+           man:modules-load.d(5)
+  Process: 15630 ExecStart=/usr/lib/systemd/systemd-modules-load (code=exited, status=1/FAILURE)
+
+If the Process ID is not listed, just restart the failed service with systemctl restart systemd-modules-load
+
+3. Now we have the process id (PID) to investigate this error in depth. Enter the following command with the current Process ID (here: 15630):
+
+$ journalctl _PID=15630
+
+-- Logs begin at Sa 2013-05-25 10:31:12 CEST, end at So 2013-08-25 11:51:17 CEST. --
+Aug 25 11:48:13 mypc systemd-modules-load[15630]: Failed to find module 'blacklist usblp'
+Aug 25 11:48:13 mypc systemd-modules-load[15630]: Failed to find module 'install usblp /bin/false'
+
+4. We see that some of the kernel module configs have wrong settings. Therefore we have a look at these settings in /etc/modules-load.d/:
+
+$ ls -Al /etc/modules-load.d/
+
+...
+-rw-r--r--   1 root root    79  1. Dez 2012  blacklist.conf
+-rw-r--r--   1 root root     1  2. Mär 14:30 encrypt.conf
+-rw-r--r--   1 root root     3  5. Dez 2012  printing.conf
+-rw-r--r--   1 root root     6 14. Jul 11:01 realtek.conf
+-rw-r--r--   1 root root    65  2. Jun 23:01 virtualbox.conf
+...
+
+5. The Failed to find module 'blacklist usblp' error message might be related to a wrong setting inside of blacklist.conf. Lets deactivate it with inserting a trailing # before each option we found via step 3:
+
+/etc/modules-load.d/blacklist.conf
+
+# blacklist usblp
+# install usblp /bin/false
+
+6. Now, try to start systemd-modules-load:
+
+$ systemctl start systemd-modules-load
+
+If it was successful, this should not prompt anything. If you see any error, go back to step 3 and use the new PID for solving the errors left.
+
+If everything is ok, you can verify that the service was started successfully with:
+
+$ systemctl status systemd-modules-load
+
+systemd-modules-load.service - Load Kernel Modules
+   Loaded: loaded (/usr/lib/systemd/system/systemd-modules-load.service; static)
+   Active: active (exited) since So 2013-08-25 12:22:31 CEST; 34s ago
+     Docs: man:systemd-modules-load.service(8)
+           man:modules-load.d(5)
+ Process: 19005 ExecStart=/usr/lib/systemd/systemd-modules-load (code=exited, status=0/SUCCESS)
+Aug 25 12:22:31 mypc systemd[1]: Started Load Kernel Modules.
+
+Often you can solve these kind of problems like shown above. For further investigation look at #Diagnosing boot problems.
+Diagnosing boot problems
+
+Boot with these parameters on the kernel command line: systemd.log_level=debug systemd.log_target=kmsg log_buf_len=1M 
+
+Information to Attach to a Bug Report
+Whenever possible, the following should be mentioned and attached to your bug report:
+
+    The exact kernel command-line used if not default. Typically from the bootloader configuration file (e.g. /boot/grub2/grub.cfg) or from /proc/cmdline
+    A copy of the file /var/log/messages
+    The output of the dmesg command: dmesg > dmesg.txt
+        ideally after booting with systemd.log_level=debug systemd.log_target=kmsg log_buf_len=1M
+    The output of a systemd dump: systemctl dump > systemd-dump.txt
+    The output of /usr/bin/systemd --test --system --log-level=debug > systemd-test.txt 2>&1
+    
+    
