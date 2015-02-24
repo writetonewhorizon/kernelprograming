@@ -237,4 +237,8 @@ To remove a script from upstart:
     1	sudo echo 'manual' | /etc/init/scriptname.override
     2	sudo update-rc.d -f scriptname remove
  
- 
+Listing the System's Start-Up Time : systemd-analyze
+Listing the Services Start-Up Time : systemd-analyze blame
+Services Start-Up Time Graphics : systemd-analyze plot > jupiter.example.com-startup.svg
+
+
