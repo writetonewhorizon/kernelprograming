@@ -1,5 +1,6 @@
 https://wiki.archlinux.org/index.php/systemd
 https://activedoc.opensuse.org/book/opensuse-reference/chapter-8-the-systemd-daemon
+http://upstart.ubuntu.com/cookbook/
 
 Analyzing the system state
 List running units
@@ -112,6 +113,10 @@ systemd-modules-load.service - Load Kernel Modules
 
 If the Process ID is not listed, just restart the failed service with systemctl restart systemd-modules-load
 
+To see which other units a service depends on:
+
+       $ systemctl list-dependencies name.service
+
 3. Now we have the process id (PID) to investigate this error in depth. Enter the following command with the current Process ID (here: 15630):
 
 $ journalctl _PID=15630
@@ -171,5 +176,65 @@ Whenever possible, the following should be mentioned and attached to your bug re
         ideally after booting with systemd.log_level=debug systemd.log_target=kmsg log_buf_len=1M
     The output of a systemd dump: systemctl dump > systemd-dump.txt
     The output of /usr/bin/systemd --test --system --log-level=debug > systemd-test.txt 2>&1
-    
-    
+   
+how to check runlevel 
+$runlevel
+ 
+Debian and Ubuntu use the service command to control services and update-rc.d for adding and removing services from start up.
+Using the service command we can start, stop, restart and display all available services. 
+With update-rc.d we can add and remove services and add them to the Ubuntu/ Debian start up scripts
+What services are available for startup?
+    [ + ] – Services with this sign will start at OS boot.
+    [ – ] – Services with this sign do not start at OS boot.
+$service --status-all
+eg
+service apache2 start
+service apache2 stop
+
+Remove a service
+update-rc.d -f  apache2 remove
+
+add a service
+update-rc.d -f  apache2 default 
+
+Debian & Ubuntu: Adding a StartUp Script
+1. As root, create your script:
+2. Make the script executable:
+3. Add your script to /etc/init.d:
+4. Run update-rc.d on the new script:
+
+For example :
+Creating your own ubuntu upstart service:
+
+    Create a shell script. (Name it whatever you want. Here I am assuming it to be “autorun.sh”)
+    1	vi autorun.sh
+    Copy the shell script to /etc/init.d/
+    1	sudo cp autorun.sh /etc/init.d/autorun.sh
+    Make the script executable.
+    1	sudo chmod +x /etc/init.d/autorun.sh
+    Update the upstart table of ubuntu by creating symbolic links.
+    1	sudo update-rc.d autorun.sh defaults
+    Done.
+
+To boot an already existing script:
+
+    Update the upstart table of ubuntu by creating symbolic links.
+    1	sudo update-rc.d service_name defaults
+    Enable a disabled upstart service
+    1	sudo update-rc.d service_name enable
+
+To remove a script from upstart:
+
+    (option-1)
+    update the table and remove the script(not necessary)
+    1	sudo update-rc.d -f autorun.sh remove
+    2	sudo rm /etc/init.d/autorun.sh (optional)
+    (option-2)
+    Disable the service from boot
+    1	sudo update-rc.d -f autorun.sh disable
+    (option-3)
+    if there is a configuration file for the script in /etc/init/
+    1	sudo echo 'manual' | /etc/init/scriptname.override
+    2	sudo update-rc.d -f scriptname remove
+ 
+ 
