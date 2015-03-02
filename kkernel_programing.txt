@@ -1,0 +1,444 @@
+https://blackfin.uclinux.org/doku.php?id=compiling_the_kernel
+
+
+New Kernel Module Loader
+
+The 2.6 Kernel requires a new Kernel Module Loader.
+ftp.kernel.org/pub/linux/kernel/people/rusty/modules/module-init-tools-3.1-pre4.tar.bz2
+
+With the 2.6 kernel a lot of the module loading functionality has been moved into the kernel. Most of the module install work is done by a new system call init_module.
+
+The following user code example shows how the insmod and modprobe utilities use the new call.
+
+       ret = init_module(file, len, options);
+ 
+                         file = module name
+                         len  = module size
+                         options = load options
+
+A configuration file /etc/modprobe.conf file can be created from an older /etc/modules.conf file using a new script called generate-modprobe.conf.
+Module Loading
+
+The kmod kernel task is responsible to auto loading kernel modules. It actually uses a user mode task called /sbin/modprobe. This uses information from a number of files to get the module loaded and configured.
+
+    /etc/modprobe.conf - overrides or modifies default actions for loading modules
+    /lib/modules/2..x-<sub version name>/modules.dep - a file that lists all the modules found and declares other modules that need to be loaded prior to loading a specified module.
+
+The modules.dep file can be produced automatically by a program called depmod, which is run as a normal part of the uClinux-dist build process (you should not need to do this by hand).
+
+Modules can also be loaded manually using the modprobe or insmod commands. modprobe can only be used when the module is described in the /lib/modules/2..x-<sub version name>/modules.dep file, if it is not in there, use insmod
+
+If you want to see all the modules loaded in a running kernel use the lsmod command.
+
+Note that you have to be superuser or root to insert or remove modules.
+
+root: /> lsmod
+Module                  Size  Used by
+nls_utf8                2176  1
+ext3                  115688  3
+jbd                    61348  1 ext3
+vfat                   13056  0
+fat                    43168  1 vfat
+sbp2                   22792  3
+snd_seq                53008  1
+bluetooth              44932  0
+nvram                   8328  0
+usbserial              26856  0
+parport_pc             37824  1
+lp                     10536  0
+parport                37960  2 parport_pc,lp
+nfsd                  106824  5
+exportfs                5632  1 nfsd
+speedstep_lib           4228  0
+freq_table              4356  0
+processor              25640  0
+[...]  and many more
+
+More Information
+
+The Device Drivers section goes into more detail on modules.
+
+See also the following man pages
+
+    insmod
+    modprobe
+    depmod
+    modprobe.conf
+
+
+
+Module Example
+
+This example shows how to create and build a module outside of the kernel tree, and install and remove it.
+
+While it is always best to keep the module as part of the kernel source tree (in the same source directory), so it can pick up the correct header files properly, it is not necessary. This example assumes that the kernel is installed at /home/uClinux-dist and the example module files are created in the /home/module-example directory. If your installation is in different paths, you will need to change the command line build options.
+sample_module.c
+
+The first file which must be created is the module itself.
+
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/device.h>
+#include <linux/platform_device.h>
+ 
+MODULE_DESCRIPTION("sample module");
+MODULE_LICENSE("GPL");
+ 
+static int sample_module_drv_probe(struct device *dev)
+{
+    printk(KERN_DEBUG "probe sample module device\n");
+    return 0;
+}
+ 
+static int sample_module_drv_remove(struct device *dev)
+{
+    printk(KERN_DEBUG "remove sample module device\n");
+    return 0;
+}
+ 
+static struct device_driver sample_module_driver = {
+    .name           = "sample_module",
+    .bus            = &platform_bus_type,
+    .probe          = sample_module_drv_probe,
+    .remove         = sample_module_drv_remove,
+};
+ 
+static int __init sample_module_init(void)
+{
+    printk(KERN_DEBUG "init sample module device\n");
+    return driver_register(&sample_module_driver);
+}
+ 
+static void __exit sample_module_cleanup(void)
+{
+    printk(KERN_DEBUG "cleanup sample module device\n");
+    driver_unregister(&sample_module_driver);
+}
+ 
+module_init(sample_module_init);
+module_exit(sample_module_cleanup);
+
+Makefile
+
+The 2nd file which must be created is the Makefile for the module.
+
+obj-m := sample_module.o
+
+If there were multiple c files (file1.c and file2.c) which needed to be linked for the module to build properly, the Makefile would look something like:
+
+obj-m := sample_module.o
+sample_module-objs := file1.o file2.o
+
+Building a Kernel with module support
+
+Since the kernel and module share resources, the kernel must be set up properly to install and remove modules.
+
+Make sure the following settings are enabled:
+
+Linux Kernel Configuration
+  Loadable module support
+    [*] Enable loadable module support
+    [*]   Module unloading
+
+Application Main Menu
+  BusyBox
+    [*] insmod
+    [*] insmod: lsmod
+    [*] insmod: modprobe
+    [*] insmod: rmmod
+    [*] insmod: 2.6 and above kernel modules
+    [*] insmod: Model version checks
+    [*] insmod: load in kernel memory
+
+and then what ever other kernel/application options you may want to set for your build and platform. When building a kernel with loadable module support, but no loadable modules, you may get warnings like:
+
+BFD: /home/uClinux-dist/images/linux: warning: Empty loadable segment detected, is this intentional ?
+
+This is normal.
+Building the Module
+
+To build the module, on the host do: (you will need to change the paths, to suit your installation)
+
+Before following the next steps, it is assumed that your kernel is configured for your system. If it is not configured properly, you will run into errors.
+
+rgetz@home:~/uClinux-dist> make -C /home/uClinux-dist/linux-2.6.x SUBDIRS=/home/module_example modules
+make: Entering directory `/home/uClinux-dist/linux-2.6.x'
+  CC [M]  /home/module_example/sample_module.o
+  Building modules, stage 2.
+  MODPOST
+  CC      /home/module_example/sample_module.mod.o
+  LD [M]  /home/module_example/sample_module.ko
+make: Leaving directory `/home/uClinux-dist/linux-2.6.x'
+
+This will leave a few new files in the /home/module_example directory
+
+rgetz@home:~/uClinux-dist> ls -l /home/module_example
+total 24
+-rw-r--r--  1 rgetz users   25 2005-09-28 19:14 Makefile
+-rw-r--r--  1 rgetz users  862 2005-09-28 19:13 sample_module.c
+-rw-r--r--  1 rgetz users 2682 2005-09-28 19:18 sample_module.ko
+-rw-r--r--  1 rgetz users  454 2005-09-28 19:18 sample_module.mod.c
+-rw-r--r--  1 rgetz users 1248 2005-09-28 19:18 sample_module.mod.o
+-rw-r--r--  1 rgetz users 1944 2005-09-28 19:18 sample_module.o
+
+    sample_module.o is the object file of the module, this can not be loaded into the kernel.
+    sample_module.ko is the kernel module, it is the file which can be dynamically loaded and unloaded from the kernel.
+
+    rgetz@home:~module_example> file sample_module.ko
+    sample_module.ko: ELF 32-bit LSB relocatable, version 1 (SYSV), not stripped
+
+    sample_module.mod.c is generated by kernel Makefile automatically. It defines where to link the module initialization and dependency data.
+
+Using the Module
+
+    After the kernel is booted, make sure you are running a kernel which supports modules, This can be done by:
+
+    root:~> lsmod
+    Module                  Size  Used by
+    lsmod: /proc/modules: No such file or directory
+
+    or by checking the /proc/modules directory
+
+    root:~> ls /proc/modules
+    ls: /proc/modules: No such file or directory
+
+    If you are running a kernel which supports loadable modules, you should see something that looks like:
+
+    root:~> lsmod
+    Module                  Size  Used by
+    root:~> ls -l /proc/modules
+    -r--r--r--    1 0        0               0 /proc/modules
+
+    Load the module to the target, via network (ftp, rcp, nfs, wget) or serial (if you have compiled in zmodem support)
+    Install the module
+
+    root:~> insmod ./sample_module.ko
+    root:~> lsmod
+    Module                  Size  Used by
+    sample_module 1396 0 - Live 0x00653000
+
+    This is only a sample module framework. It does nothing. If you want it to do anything, please add specific code into it.
+    Remove the module
+
+    root:~> rmmod sample_module
+
+    Make sure the module is gone:
+
+    root:~> lsmod
+    Module                  Size  Used by
+
+Module Parameters
+
+If you want to have initialization parameters that you can change at runtime, you need to use some helper functions.
+
+Here we'll create a long variable named delay.
+
+static long delay = 5;
+module_param(delay, long, 0);
+MODULE_PARM_DESC(delay, "number of seconds to delay before firing; default = 5 seconds");
+
+Then to change it while loading the module, simply use:
+
+root:~> modprobe sample_module delay=14
+
+Extracting information at runtime
+
+Information about kernel modules are exported via the sysfs filesystem which is typically mounted at /sys.
+
+Please see the parameters page for manipulating parameters at runtime.
+
+To find out where module sections are loaded at runtime, look in the sections subdirectory:
+
+root:~> insmod sample_module
+root:~> ls -a /sys/modules/sample_module/sections/
+.                          .init.text
+..                         .rodata
+.bss                       .rodata.str1.4
+.data                      .strtab
+.exit.text                 .symtab
+.gnu.linkonce.this_module  .text
+root:~> cat /sys/modules/sample_module/sections/.data
+0x3221078
+root:~> cat /sys/modules/sample_module/sections/.text
+0x3220000
+
+This tells us that the .data section of the module is mapped at the address 0x3221078 and that the .text section of the module is mapped at the address 0x3220000.
+Building the module into the kernel
+
+If you wish to link the module directly into the kernel, you should not need to change any of the code. The __init directive in the function definition as well as the module_init() will setup the proper code so that your initialization function is called when the kernel boots.
+
+By default, module_init() will be defined as a device_initcall(). If your driver is not a device, you may need to use another call:
+
+core_initcall(fn)
+postcore_initcall(fn)
+arch_initcall(fn)
+subsys_initcall(fn)
+fs_initcall(fn)
+device_initcall(fn)
+late_initcall(fn)
+
+The Makefile will need a slight tweak. Rather than using 'obj-m', the variable you want is 'obj-y'.
+
+
+
+Building 2.6 Kernel Modules
+
+A new method is used to trigger the kernel to build a module outside the kernel tree. The device drivers section will show you how to simply add module building instructions to a normal kernel makefile
+
+Here is an example of a 2.6 module makefile ( out of tree )
+
+                                                             
+                                                              
+ifneq ($(KERNELRELEASE),)                                     
+##################################################            
+# PASS 2 do this when called by the kernel make process              
+##################################################            
+# produce a module from a single C file
+obj-$(CONFIG_MYMOD) += mymod.o
+
+# or  produce a module from multiple C files                    
+                                                              
+#   obj-$(CONFIG_MYMOD) += mymod.o                            
+#  mymod-objs := mymod_main.o mymod_lib.o mymod_io.o          
+                                                              
+                                                              
+else 
+                                                         
+##################################################            
+# PASS 1 do this when called from the user make                      
+##################################################            
+    KDIR        := /home/student/work/uClinux-dist/linux-2.6.x
+    PWD         := $(shell pwd)                               
+                                                              
+default:                                                      
+<TAB>$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules                
+                                                              
+install:                                                      
+<TAB>$(MAKE) -C $(KDIR) INSTALL_MOD_PATH=$(IDIR) \            
+                    SUBDIRS=$(PWD) modules_install            
+endif                                                         
+                                                              
+
+Kernel Module out of tree build
+
+The module build process can be instructed to place the modules in a different target directory and use source directories outside the kernel source tree.
+
+When the modules needs to be installed under another directory the INSTALL_MOD_PATH directive can be used to prefix ”/lib/modules” as seen in the following example:
+
+                                                                      
+make INSTALL_MOD_PATH=/home/student/work/build/image modules_install  
+                                                                      
+
+This will install the modules in the directory
+
+    /home/student/work/build/image/lib/modules.                       
+                                                                      
+
+This directory can be a NFS mounted filesystem on another machine, allowing out-of-the-tree support for installation on remote machines.
+
+Kernel Module Parameters
+
+A Kernel Module Parameter is an effective way of defining variables within a module that can be altered at load time without the need to recompile the module. The sysfs filesystem also gives us an easy means of adjusting these parameters while the system is running.
+Kernel Code
+
+A parameter used to be defined using the MODULE_PARM macro. Apart from missing an A in PARAM, this macro was restricted in what you could do when setting up a variable to be used.
+
+Now a new way of setting up a module parameter is to use a new macro:
+
+module_param(name, type, perm)
+
+    name is the variable name
+    type defines the variable type which can now be “user defined”.
+    perm controls the visibility and access of the param in sysfs
+
+A code example helps:
+
+#include <linux/module.h>
+ 
+/* define the parameter */
+static int debug;
+ 
+/* use this to turn it into a param */
+module_param(debug, int, S_IRUGO | S_IWUSR);
+
+Controlling Value
+Userspace
+
+Look at the file system entry:
+
+root> ls /sys/module/mymodule/parameters
+debug
+
+Set the value
+
+root> echo 23 -n > /sys/module/mymodule/parameters/debug 
+
+Inspect the value
+
+root> cat /sys/module/mymodule/parameters/debug
+23
+
+This is a very useful way to add the ability to modify module behavior both at load and run time.
+Kernel Command line
+
+If this module is statically compiled into the kernel then the parameter is still available as a boot time option in the kernel command line.
+
+mymodule.test=OFF
+<module name>.<parametername>=<value>
+
+User Defined Parameter Types
+
+You can also create your own variable types. To do this you need to define functions to allow the module loader to understand how to parse and present the data in the parameter.
+
+Lets call a type newtype
+
+The three functions that need to be defined are:
+
+    param_set_newtype - parse the string to set the type
+    param_get_newtype - show the meaning of the param structure as a string
+    param_check_newtype - check the variable type
+
+A small code example may help:
+
+struct newtype {
+    int test;
+    int val;
+};
+ 
+#define param_check_newtype(name, p)__param_check(name, p, newtype)
+ 
+int param_set_newtype(const char * val, struct kernel_param *par ) {
+     struct newtype * nt = (struct newtype *) par;
+     if (strncmp(val,"on",2)==0) {
+        nt->test = 1;
+     } else if (strncmp(val,"off",3) {
+        nt->test = 2;
+     } else {
+         nt->test = 0;
+     }
+     return 0;
+}
+ 
+int param_get_newtype(char * buf, struct kernel_param *par ) {
+     struct newtype * nt = (struct newtype *) par;
+     int len = 0;
+ 
+     switch ( nt->test ) {
+        case 1:
+           len += sprintf(buf,"ON");
+           break;
+        case 2:
+           len += sprintf(buf,"Off");
+           break;
+        default:
+           len += sprintf(buf,"DUNNO?");
+           break;
+      }
+      return len;
+}
+ 
+struct newtype mypar;
+ 
+module_param(mypar, newtype, 0664);
+
