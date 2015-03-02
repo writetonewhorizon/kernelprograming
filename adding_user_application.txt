@@ -1,0 +1,83 @@
+
+Adding User Applications
+
+The following procedure describes how to add a user written application to the uClinux memory image:
+
+First create a new directory in …/uClinux-dist/user/ to store the source files for the new application. In this example the program and directory will be called myprog. Next move the source files for the application into this directory.
+
+When editing the makefiles described in this section ensure that:
+
+    the text editor uses only line feeds (LF) to specify line endings.
+    indents are done with tabs, not spaces.
+
+Next the file ./uClinux-dist/user/Makefile must be edited. Add a line similar to the following in the included directories section:
+
+dir_$(CONFIG_USER_MYPROG_MYPROG)            += myprog
+
+If the directory contains two executables, for example myprog1 and myprog2, this is changed to:
+
+dir_$(CONFIG_USER_MYPROG_MYPROG1)            += myprog
+dir_$(CONFIG_USER_MYPROG_MYPROG2)            += myprog
+
+Next the file ./uClinux-dist/user/Kconfig.local must be edited. This file contains the text which will be displayed in the menu when compiling uClinux. Add an entry similar to the following:
+
+config USER_MYPROG_MYPROG1
+        bool "myprog1"
+        help
+          myprog1 is a ping(1) like program which uses the Internet Control Message
+          Protocol (ICMP) echo request to determine if a host is up.
+          Main project is at http://myprog1.sourceforge.net/
+
+You can select, or depend on other packages. For example:
+
+config USER_BLUEZ_BCCMD
+        bool "Bluez bccmd util"
+        depends on USER_BLUEZ
+        select LIB_LIBUSB
+        help
+          Utility for the CSR BCCMD interface
+
+Next ensure that there is an appropriate Makefile inside your program's directory, in this example: ./uClinux-dist/user/myprog/Makefile. This Makefile should have a form similar to the following:
+
+EXEC = myprog
+OBJS = myprog.o
+
+
+
+all: $(EXEC)
+
+$(EXEC): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
+
+
+
+romfs:
+	$(ROMFSINST)    /bin/$(EXEC)
+
+
+clean:
+	rm -f $(EXEC) *.elf *.gdb *.o
+
+The Makefile for two executables in the same directory would be similar to the following:
+
+EXEC = myprog1 myprog2
+OBJS = myprog1.o myprog2.o
+
+
+
+all: $(EXEC)
+
+$(EXEC): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $@.o $(LDLIBS)
+
+
+
+romfs:
+	$(ROMFSINST) -e CONFIG_USER_MYPROG_MYPROG1      /bin/myprog1
+	$(ROMFSINST) -e CONFIG_USER_MYPROG_MYPROG2      /bin/myprog2
+clean:
+	-rm -f $(EXEC) *.elf *.gdb *.o
+
+Currently the ./uClinux-dist/user/ping may be copied into your own application directory and the EXEC and OBJS variables modified to reflect your own desired executable name, and source object filenames respectively. Examples of more complex directory structures and Makefiles can be found in the …/uClinux-dist/user directory tree.
+
+Once these steps are complete, re-compile the uClinux kernel (see Basic Compilation). Your application should now appear in the application configuration window under the section you placed it in. Ensure your application is selected and continue compiling the kernel. When compilation is finished load the newly created memory image onto the target system. If your application compiled successfully it should now appear in the /bin directory on the target system.
