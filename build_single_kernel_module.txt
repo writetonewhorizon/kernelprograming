@@ -1,0 +1,4 @@
+http://www.cnx-software.com/2015/03/06/how-to-build-a-single-kernel-module-driver-in-ubuntu/
+http://askubuntu.com/questions/515407/how-recipe-to-build-only-one-kernel-module
+http://askubuntu.com/questions/168279/how-do-i-build-a-single-in-tree-kernel-module?lq=1
+http://www.linuxquestions.org/questions/linux-kernel-70/list-of-linux-kernel-development-tutorials-books-873556/
