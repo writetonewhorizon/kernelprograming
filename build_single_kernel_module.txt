@@ -5,9 +5,11 @@ http://www.ibm.com/developerworks/views/linux/libraryview.jsp
 kernelnewbies.org/LinuxVersions?action=show&redirect=Linux26Changes
 http://kernelplanet.org/
 https://www.kernel.org/doc/htmldocs/
+http://www.gnugeneration.com/books/linux/2.6.20/
+https://www.kernel.org/doc/Documentation/input/input-programming.txt
 
-drivers module http://examples.oreilly.com/9780596000080/
-http://www.cs.fsu.edu/~baker/devices/lxr/http/source/linux/drivers
+mouse driver
+http://karthiknayak.github.io/blog/USB-Driver/
 
 http://www.crashcourse.ca/introduction-linux-kernel-programming/lesson-1-building-and-running-new-linux-kernel
 http://wiki.centos.org/HowTos/BuildingKernelModules
