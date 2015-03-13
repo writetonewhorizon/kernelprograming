@@ -8,6 +8,9 @@ https://www.kernel.org/doc/htmldocs/
 http://www.gnugeneration.com/books/linux/2.6.20/
 https://www.kernel.org/doc/Documentation/input/input-programming.txt
 
+kernel drivers
+-drivers module http://examples.oreilly.com/9780596000080/
+-http://www.cs.fsu.edu/~baker/devices/lxr/http/source/linux/drivers
 mouse driver
 http://karthiknayak.github.io/blog/USB-Driver/
 
