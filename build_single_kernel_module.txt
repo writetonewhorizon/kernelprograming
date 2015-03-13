@@ -7,6 +7,7 @@ http://kernelplanet.org/
 https://www.kernel.org/doc/htmldocs/
 
 drivers module http://examples.oreilly.com/9780596000080/
+http://www.cs.fsu.edu/~baker/devices/lxr/http/source/linux/drivers
 
 http://www.crashcourse.ca/introduction-linux-kernel-programming/lesson-1-building-and-running-new-linux-kernel
 http://wiki.centos.org/HowTos/BuildingKernelModules
