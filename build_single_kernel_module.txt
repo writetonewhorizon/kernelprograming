@@ -14,6 +14,20 @@ kernel drivers
 mouse driver
 http://karthiknayak.github.io/blog/USB-Driver/
 
+gpio driver
+http://blackfin.uclinux.org/doku.php?id=gpio
+http://blackfin.uclinux.org/doku.php?id=linux-kernel:drivers:simple-gpio
+https://www.kernel.org/doc/Documentation/gpio/sysfs.txt
+http://lwn.net/Articles/532714/
+http://sysprogs.com/VisualKernel/tutorials/raspberry/leddriver/
+https://lkml.org/lkml/2009/10/8/34
+
+
+virtual image creation
+http://www.linuxpedia.org/index.php?title=Build_Linux_System_for_Virtual_Machine
+
+
+
 http://www.crashcourse.ca/introduction-linux-kernel-programming/lesson-1-building-and-running-new-linux-kernel
 http://wiki.centos.org/HowTos/BuildingKernelModules
 http://www.cnx-software.com/2015/03/06/how-to-build-a-single-kernel-module-driver-in-ubuntu/
