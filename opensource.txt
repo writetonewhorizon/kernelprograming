@@ -38,3 +38,4 @@ https://www.ibm.com/developerworks/community/blogs/58e72888-6340-46ac-b488-d31aa
 http://lwn.net/Articles/322666/
 http://lwn.net/Articles/365835/
 http://lwn.net/Articles/366796/
+http://www.jann.cc/2012/08/23/building_a_kernel_3_x_for_the_olinuxino_from_sources.html
