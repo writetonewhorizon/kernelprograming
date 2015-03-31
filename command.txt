@@ -1,6 +1,6 @@
 gernel commands :
 df -ah
-du -hs dir
+du -sch /*
 grep -nri string *
 find . -iname *str* | grep str
 find dir -iname file
@@ -9,6 +9,12 @@ ps -auxf
 wheris and whatis
 ln -s targetfile linkname
 sudo mount -o remount,rw /partition/identifier /mount/point
+systemctl
+journlctl  -a
+strings 
+Listing the System's Start-Up Time : systemd-analyze
+Listing the Services Start-Up Time : systemd-analyze blame
+Services Start-Up Time Graphics : systemd-analyze plot > jupiter.example.com-startup.svg
 
 related to git 
 git command --help
@@ -16,20 +22,27 @@ git clone gitdir lodir
 git branch -a
 git checkout brname
 git pull
-git add file or dir
-git status
-git commit -a -s -m "message"
-git reset --hard <commit><HEAD>
+git reset --soft <commit>
+git clean -f   to remove untracked file
+git reset --soft HEAD^ : Removing the last commit but changes in file will be there.
+git reset --hard @{u}  : Discarding all local commits on this branch but changes you will not get back
+git reset --hard HEAD^ : Removing the last commit
+git reset --hard HEAD~2 : remove last two commit
 git log --pretty=oneline
 git log -p -1 hashvalue
-git log --oneline --decorate --graph --all
 git show pointer
+git add file or dir
+git status
+git commit -s 
+git commit --amend -m "message"   : Updating the last commit's contents or commit message
 git format-patch -n <commit>
+git push ssh://dus5cob@fe0vm142.de.bosch.com:29418/fastboot-userland-imx.git HEAD:refs/for/development-38
 git apply --stat patch
 git apply --check patch
 git am --signoff < patch
-gitk
+gitk --all --date-order  or git log --all or git log --graph --decorate --oneline --all  to know the SHA (hash ID)of commit
 git diff commit1 commit2
+git checkout -- filename undo or discard the previous changes of a file
 
 BSP
 1.git checkout -b branchname
@@ -39,8 +52,7 @@ export CROSS_COMPILE=arm-none-linux-gnueabi-
 4. make configfile
 5 make -j8
 
-run time debugging
-
+run time debugging : userspace
 strace -e open ls
 lsof | more
 htop 
@@ -63,7 +75,6 @@ LD_DEBUG=all  dynamic executable
 LD_DEBUG=libs,versions testApp -m
 to take output in a file
 LD_DEBUG_OUTPUT=sym.log LD_DEBUG=bindings  dynamic executable 
-
 
 gdb thread debugging
 
@@ -106,3 +117,12 @@ shared library creation:
 g++ -ggdb -fPIC -shared lib.cpp -o libTest.so
 g++ -ggdb main.cpp libTest.so -o testApp -Wl,--rpath='$ORIGIN'
 
+kernel space :
+lspci: list PCI devices
+lsusb: list USB devices
+fdisk: partition disk
+hdparm: set disk parameters
+ifconfig, iwconfig: configure network interface
+dmesg, insmod, modprobe, rmmod, lsmod: manage modules
+halt, reboot: control system
+hotplug: manage the adding/removal of hardware
