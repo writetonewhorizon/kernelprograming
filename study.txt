@@ -1,0 +1,471 @@
+Introduction to Linux for Developers
+1.	Introduction
+2.	Linux and the Operating System
+3.	Graphical Environments and Interfaces
+4.	Getting Help
+5.	Text Editors
+6.	Shells, bash, and the Command Line
+7.	System Components
+8.	System Administration
+9.	Essential Command Line Tools
+10.	Command and Tool Details
+11.	Users and Groups
+12.	Bash Scripting
+13.	Files and Filesystems
+14.	Filesystem Layout
+15.	Linux Filesystems
+16.	Compiling, Linking and Libraries
+17.	Java Installation and Environment
+Essentials of System Administration
+1.	System Startup and Shutdown
+2.	GRUB
+3.	init: SystemV, Upstart, systemd
+4.	Linux Filesystem Tree Layout
+5.	Kernel Services and Configuration
+6.	Kernel Modules
+7.	Devices and udev
+8.	Partitioning and Formatting Disks
+9.	Encrypting Disks
+10.	Linux Filesystems and the VFS
+11.	Filesystem Features: Attributes, Creating, Checking, Mounting
+12.	Filesystem Features: Swap, Quotas, Usage
+13.	The Ext2/Ext3/Ext4 Filesystems
+14.	The XFS and btrfs Filesystems
+15.	Logical Volume Management (LVM)
+16.	RAID
+17.	Local System Security
+18.	Linux Security Modules
+19.	Processes
+20.	Signals
+21.	System Monitoring
+22.	Process Monitoring
+23.	I/O Monitoring and Tuning
+24.	I/O Scheduling
+25.	Memory: Monitoring Usage and Tuning
+26.	Package Management Systems
+27.	RPM
+28.	DPKG
+29.	APT
+30.	User Account Management
+31.	Group Management
+32.	File Permissions and Ownership
+33.	Pluggable Authentication Modules (PAM)
+34.	Backup and Recovery Methods
+35.	Network Addresses
+36.	Network Devices and Configuration
+37.	Basic Troubleshooting
+38.	System Rescue
+Linux System Administration
+1.	System Startup and Shutdown
+o	Understanding the Boot Sequence
+o	The Grand Unified Boot Loader
+o	GRUB Configuration Files
+o	System Configuration Files in /etc
+o	The init Process
+o	SysVinit Startup
+o	chkconfig and service
+o	Upstart
+o	systemd
+o	Shutting down/Rebooting the System
+2.	Linux Filesystem Tree Layout
+o	Data Distinctions
+o	FHS Linux Standard Directory Tree
+3.	Kernel Services and Configuration
+o	Kernel Overview
+o	Kernel Configuration
+o	sysctl
+o	Kernel Modules
+o	Module Utilities
+o	Module Configuration
+o	udev and Device Management
+4.	Partitioning and Formatting Disks
+o	Common Disk Types
+o	Disk Geometry
+o	Partitioning
+o	Naming Disk Devices
+o	Sizing up partitions
+o	Partition table editors
+5.	Linux Filesystems
+o	Some Notes About Filesystems
+o	Virtual Filesystem (VFS)
+o	Filesystem Concepts
+o	Disk and Filesystem Usage
+o	Extended Attributes
+o	ext4
+o	XFS
+o	btrfs
+o	Creating and formatting filesystems
+o	Checking and Repairing Filesystems
+o	Mounting filesystems
+o	Swap
+o	Filesystem Quotas
+6.	RAID and LVM
+o	RAID
+o	RAID Levels
+o	Software RAID Configuration
+o	Logical Volume Management (LVM)
+o	Volumes and Volume Groups
+o	Working with Logical Volumes
+o	Resizing Logical Volumes
+o	LVM Snapshots
+7.	Processes
+o	Programs and Processes
+o	Process States
+o	Execution Modes
+o	Daemons
+o	Creating Processes
+o	Process Monitoring
+o	Signals
+o	niceness
+8.	Package Management Systems
+o	Software Packaging Concepts
+o	RPM (Red Hat Package Manager)
+o	DPKG (Debian Package)
+9.	Package Installers
+o	yum
+o	zypper
+o	APT
+10.	User and Group Account Management
+o	User Accounts
+o	Management
+o	Passwords
+o	Restricted Shells and Accounts
+o	The root Account
+o	Group Management
+o	PAM (Pluggable Authentication Modules)
+o	Authentication Process
+o	Configuring PAM
+o	LDAP Authentication
+o	File Permissions and Ownership
+11.	Backup and Recovery Methods
+o	Backup Basics
+o	cpio
+o	tar
+o	Compression: gzip, bzip2 and xz and Backups
+o	dd
+o	rsync
+o	dump and restore
+o	mt
+o	Backup Programs
+12.	Networking
+o	IP Addresses
+o	Hostnames
+o	Configuring Network Interfaces
+o	Routing
+o	Name Resolution
+o	Network Diagnostics
+13.	Local System Security
+o	Creating a Security Policy
+o	Updates and Security
+o	Physical Security
+o	Filesystem Security
+o	Linux Security Modules
+14.	Basic Troubleshooting and System Rescue
+o	Troubleshooting Overview
+o	Things to Check: Networking
+o	Boot Process Failures
+o	Filesystem Corruption and Recovery
+o	Virtual Consoles
+o	Rescue Media and Troubleshooting
+o	System Rescue and Recovery
+Developing Applications For Linux
+01: Introduction 
+02: Preliminaries 
+03: Compilers 
+04: Libraries 
+05: Make 
+06: Source Control 
+07: Debugging and Core Dumps 
+08: Debugging Tools 
+09: System Calls 
+10: Memory Management and Allocation 
+11: Files and Filesystems in Linux 
+12: File I/O 
+13: Advanced File Operations 
+14: Processes - I 
+15: Processes - II 
+16: Pipes and Fifo's 
+17: Asynchronous I/O** 
+18: Signals - I 
+19: Signals - II 
+20: POSIX Threads - I 
+21: POSIX Threads - II 
+22: Networking and Sockets 
+23: Sockets - Addresses and Hosts 
+24: Sockets - Ports and Protocols 
+25: Sockets - Clients 
+26: Sockets - Servers 
+27: Sockets - Input/Output Operations 
+28: Sockets - Options 
+29: Netlink Sockets 
+30: Sockets - Multiplexing and Concurrent Servers 
+31: Inter Process Communication 
+32: Shared Memory 
+33: Semaphores 
+34: Message Queues
+
+Developing with GIT
+01: Introduction 
+02: Git Installation 
+03: Git and Revision Control Systems 
+04: Using Git: an Example 
+05: Git Concepts and Architecture 
+06: Managing Files and the Index 
+07: Commits 
+08: Branches 
+09: Diffs 
+10: Merges 
+11: Managing Local and Remote Repositories 
+12: Using Patches
+Developing Linux Device Drivers 
+1.	Introduction
+2.	Preliminaries
+3.	Device Drivers char,block,usb,network,pci,tty,video,cdrom.i2c,gpio,Bluetooth,media,bus,mtd
+4.	Character Devices
+5.	Kernel Features
+6.	Interrupts and Exceptions
+7.	Modules II: Exporting, Licensing and Dynamic Loading
+8.	Debugging Techniques
+9.	Timing and Timers
+10.	Race Conditions and Synchronization Methods
+11.	ioctls
+12.	Unified Device Model and sysfs
+13.	Firmware
+14.	Memory Management and Allocation
+15.	Transferring Between User and Kernel Space
+16.	Sleeping and Wait Queues
+17.	Interrupt Handling: Deferrable Functions and User Drivers
+18.	Hardware I/O
+19.	PCI
+20.	Platform Drivers**
+21.	Device Trees**
+22.	Direct Memory Access (DMA)
+23.	Network Drivers I: Basics
+24.	Network Drivers II: Data Structures
+25.	Network Drivers III: Transmission and Reception
+26.	Network Drivers IV: Selected Topics
+27.	USB Drivers
+28.	Memory Technology Devices**
+29.	Power Management
+30.	The Virtual File System
+31.	I/O Scheduling
+32.	Block Drivers
+33.	Filesystems in User-Space (FUSE)**
+34.	Journalling Filesystems**
+Linux Kernel Internals and Debugging
+1.	Introduction
+2.	Preliminaries
+3.	Kernel Architecture I
+4.	Kernel Programming Preview
+5.	Modules
+6.	Kernel Architecture II
+7.	Kernel Initialization
+8.	Kernel Configuration and Compilation
+9.	System Calls
+10.	Kernel Style and General Considerations
+11.	Race Conditions and Synchronization Methods
+12.	SMP and Threads
+13.	Processes
+14.	Process Limits and Capabilities **
+15.	Monitoring and Debugging
+16.	The proc Filesystem **
+17.	kprobes
+18.	Ftrace
+19.	Perf
+20.	Crash
+21.	Kernel Core Dumps
+22.	Scheduling Basics
+23.	Completely Fair Scheduler (CFS)
+24.	Timing Measurements
+25.	Kernel Timers
+26.	Memory Addressing
+27.	Huge Pages
+28.	Memory Allocation
+29.	Process Address Space
+30.	Disk Caches and Swapping
+31.	Device Drivers**
+32.	Signals
+33.	Notifiers**
+34.	CPU Frequency Scaling**
+35.	Embedded Linux**
+36.	Virtualization**
+Embedded Linux Development
+1.	Embedded and Real-Time Systems Concepts
+2.	Cross-Development Environments: Goals and Needs
+3.	Cross-Development: Auto-Build Tools
+4.	Setting Up a Target Development Board
+5.	Boot loaders and U-Boot
+6.	Kernel Architecture Preview
+7.	Kernel Source Tree Overview
+8.	Kernel Programming Preview
+9.	KBuild System
+10.	Kernel Configuration, Compilation, Booting
+11.	Modules
+12.	Device Drivers**
+13.	Device Trees**
+14.	Target Filesystem Packaging
+15.	Build Target Root Filesystem
+16.	Root Filesystem Choices
+17.	Configuring uClibc
+18.	Build BusyBox Utility Suite
+19.	Linker Scripts
+20.	Kernel Monitoring and Debugging
+21.	Right-Sizing
+22.	Flash Memory Filesystems
+23.	Compressed Filesystems
+24.	Real-Time Extensions
+Linux Network Management 
+1.	Linux Networking Concepts and Review
+o	OSI Model Introduction and Upper Layers
+o	OSI Model Transport Layer
+o	OSI Model Network Layer
+o	OSI Model Lower Layers
+o	Network Topology
+o	Domain Name System
+o	System Services
+o	Managing System Services
+2.	Network Configuration
+o	Runtime Network Configuration
+o	Boot Time Network Configuration
+o	Intro to OpenVPN
+3.	Network Troubleshooting and Monitoring
+o	Network Troubleshooting
+o	Client-Side Troubleshooting
+o	Server-Side Troubleshooting
+o	Network Monitoring
+4.	Remote Access
+o	Remote Access History
+o	Intro to Cryptography
+o	Secure Remote Access
+o	Remote Graphics
+5.	Domain Name Service
+o	Overview Of DNS
+o	BIND (named) Server
+o	BIND Zone Configuration
+6.	HTTP Servers
+o	Apache
+o	Apache Configuration
+o	Apache Virtual Hosts
+o	Apache Security
+7.	Advanced HTTP Servers
+o	Mod Rewrite
+o	Mod Alias
+o	Mod Status
+o	Mod Include
+o	Mod Perl
+o	Performance Considerations
+8.	Email Servers
+o	Email Overview
+o	Postfix
+o	Dovecot
+9.	File Sharing
+o	FTP
+o	Vsftpd
+o	Rsync
+o	SSH Based Protocols
+o	Other Protocols
+10.	Advanced Networking
+o	Routing
+o	VLANs
+o	DHCP
+o	NTP
+11.	HTTP Caching
+o	Overview
+o	Squid Configuration
+12.	Network File Systems
+o	NFS
+o	SMB/CIFS
+o	Other Network File Systems
+13.	Introduction to Network Security
+o	Security Concepts
+o	Security Practices
+o	Security Tools
+14.	Firewalls
+o	TCP Wrappers
+o	Netfilter Concepts
+o	Iptables Command
+o	Managing IPtables
+o	Advanced Firewalls
+Linux Performance Tuning
+1.	Performance Optimization Principles 
+•	Methodology
+•	Optimization Process
+•	Investigation Tools
+2.	Tuning Interfaces 
+•	Kernel Tunables
+•	Kernel Parameters
+•	Application Interfaces
+•	tuned
+•	Hardware Tunables
+3.	Monitoring Interfaces 
+•	/proc Filesystem
+•	Command-line Utilities
+•	Performance Data Collection
+•	Nagios
+•	Ganglia
+•	Kernel Monitoring
+4.	Profiling Techniques and Tools 
+•	Performance Monitoring
+•	Counters
+•	Performance Ratios
+•	Kernel vs Application Profiling
+•	oprofile
+•	Perf
+•	Available perf events
+•	Acquiring Performance Data with perf
+•	Monitoring Performance from Within the Application
+•	User Space Performance Monitoring with gprof
+5.	Tracing Tools 
+•	User Space Tracing
+•	strace
+•	Library Tracing
+•	Kernel Tracing
+•	ftrace
+•	Systemtap
+•	Tracing Applications with SystemTap
+6.	 CPU Subsystem 
+•	CPU Concepts and Architecture
+•	CPU-Level Optimizations
+•	Specialized Instruction Sets
+•	CPU Topologies
+•	BIOS Settings
+7.	Power Management 
+•	Device Power Management
+•	CPU Power Saving States
+•	Frequency Scaling
+•	Power Management Tools
+8.	Process Scheduling 
+•	Design
+•	Scheduling Policies
+•	Scheduling Tunable Settings
+•	CPU Affinity and Isolation
+•	Interrupt Affinity
+9.	  I/O Subsystem 
+•	Storage Stack Overview
+•	I/O Scheduler Concepts
+•	I/O Scheduler Algorithms
+•	Hardware Considerations
+•	Tuning Storage Devices
+10.	 Local Filesystems 
+•	Choosing the Right Filesystem
+•	Ext3/4 Journaling Modes
+•	Filesystem Attributes
+11.	Network Filesystems 
+•	Network File System (NFS)
+12.	Storage and IO 
+•	Software RAID Refresher
+•	RAID Levels
+•	RAID configuration
+•	Logical volumes
+•	Volumes and Volume Groups
+•	Creating Logical Volumes
+•	Raw Devices
+•	Asynchronous I/O
+13.	Analyzing the I/O Subsystem 
+•	iostats
+•	iotop
+•	blktrace
+•	blkparse
+•	btrace
+•	btt
+•	blkiomon
