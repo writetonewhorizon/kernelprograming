@@ -5,6 +5,7 @@
 [5]: https://github.com/martinezjavie...
 [6]: http://lwn.net/Articles/416690/
 https://github.com/martinezjavier/ldd3
+http://www.learnlinuxconcepts.blogspot.in/2014/02/interrupts.html
  *  kernel_basic.c - Demonstrating the module_init() and module_exit() macros.
  *  This is preferred over using init_module() and cleanup_module().
  */
