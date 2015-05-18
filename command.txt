@@ -132,10 +132,14 @@ Kgdb:	http://www.opensourceforu.com/2011/09/kernel-space-debuggers-in-linux/
 
 systemctl --failed
 systemctl list-units --type=target -all
+systemctl --no-pager
 systemctl list-dependencies rescue.target
 systemctl status 
 systemctl show   
 systemctl daemon-reload
+systemd-analyze critical-chain
+systemd-analyze dot
+systemd-analyze plot > something.svg
 journalctl
 
 Gernel commands :
