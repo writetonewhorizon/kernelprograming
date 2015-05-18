@@ -130,6 +130,14 @@ Gdb:	https://www.linux.com/learn/linux-training/33991-the-kernel-newbie-corner-k
 http://www.elinux.org/Debugging_The_Linux_Kernel_Using_Gdb 
 Kgdb:	http://www.opensourceforu.com/2011/09/kernel-space-debuggers-in-linux/ 
 
+systemctl --failed
+systemctl list-units --type=target -all
+systemctl list-dependencies rescue.target
+systemctl status 
+systemctl show   
+systemctl daemon-reload
+journalctl
+
 Gernel commands :
 df -ah
 du -sch /*
