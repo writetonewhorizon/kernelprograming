@@ -1,158 +1,464 @@
 http://web.cecs.pdx.edu/~jrb/cs201/lectures/ 
-GDB commands by function - simple guide
----------------------------------------
+Debug Lecture
+
+1. overview
+
+	why bugs?
+	bugs happen due to 
+		human carelessness
+		time pressure
+		entropy and chaos
+			jurassic park ...  (your bug is a T-rex ...)
+
+	the human brain
+		don't underestimate the subconscious problem solving mechanism
+		think about the problem
+		what do you know
+		binary search ...  when you are befuddled
+			divide and conquer
+		"all your assumptions are invalid"
+				Joe Maybee
+		don't whine too much
+			"the o.s./compiler is broke"...  
+			it happens, but it isn't the 1st case
+		occam's razor
+
+	superior engineers are willing and able to go to the next level
+		down (note: black boxes are a fine theory for blaming
+			problems on other people ...)
+
+	you have to look inside the hood
+
+2. tools 
+	sw engineering ...
+		SPECIFICATION AND DESIGN
+		code walkthrus
+		not our concern ... so much, but having other people
+			look at your code can do wonders
+
+	code analysis ...
+		static
+			cscope
+			cflow
+		dynamic 
+			debuggers
+			valgrind
+			logging 
+				printf pros/cons
+				 	
+				cons:
+				  you use it because that is all you know
+				  you are modifying the code and may introduce
+					more bugs
+					even in the printf statements
+
+3. theory of debuggers
+	what is a debugger for?
+		peering at runtime behavior
+		not debugging but observing
+			debugger is at keyboard
+
+	very high-level observations
+		programs run at mega instructions per sec.
+		we have to STOP them to try and understand
+			look at runtime environment
+			*this doesn't make sense* (but we have no
+				better model)
+
+		interpreted versus machine-code/compiled
+			interpreted can be built into interpreter
+				example: perl -d foo.pl
+
+		compiled/assembled more complex
+			includes machine-supported instruction set
+			compiler symbol table
+				map C/C++ line to machine code
+			runtime process envirornment
+				stack
+					functions on stack
+				heap (malloc'ed memory)
+				text segment
+				data segment
+			compiler/linker (virtual memory)/cpu instructions/
+				debugger/o.s. interactions
+				
+		keep in mind limitations discovered via physics/C.S. 
+			this century
+
+			Heisenberg - if you measure it, you modify its
+				behavior
+			Godel - mathematical black boxes are an abstraction;
+				i.e. your computer can catch on fire.
+			Turing - you can't write a program that will find
+				all the HALT possibilities; i.e., there will
+				always be one more bug.
+	
+debuggers
+	all debuggers are alike
+		one program want to control another program's execution
+			even down to the machine instruction level
+			one instruction or HLL statement at a time
+		see the other program's memory spaces
+			stack/heap
+		possibly change other program's memory spaces
+			consider multi-user o.s. protection models ...
+		basically you set breakpoints/run/see what happened
+			and *think*
+
+	breakpoints
+		for machine/compiled code,  we need to be able to somehow
+			say STOP here and return control to debugger
+
+		breakpoint is typically a special instruction inserted by
+			magic into the code that causes a sw trap
+			and sends a "interrupt" to the debugger
+
+		often text is modified ...  
+
+	debugger modes
+		single thread
+			UNIX debugger execution model
+				debugger is parent of debuggee child
+		parallel (tasks or threads)
+			unix attach
+			depends on o.s. and debugger IPC models
+		kernel (tricky ...  See Heisenberg)
+			2 cpus with one under the control of the other
+
+	the debugger cycle
+
+the debug cycle in gdb terms:
+
+	0.  think ...  analyze the problem
+		what do you know about the problem.
+		what do you NOT KNOW about the problem.
+	1.  set a breakpoint 
+			(gdb) break  line/function
+	2.  run it to the breakpoint
+			(gdb) run  or cont
+OR singlestep with step/next
+	3.  analyse (and try again) 
+		analyze the stack
+			(gdb) bt
+		analyze the variables
+			(gdb) print  x
+		analyze where you are code wise (list)
+			(gdb) list 
+				list main
+				list 101
+
+-------------------------------------------------------------
+core variation
+	not rm -f core
+
+	1. jim, he's dead ...  (there is no runtime phase)
+
+	2. fireup the debugger on the core module
+		% gdb mybomb core  
+
+ 	3.  analyze as above
+		(gdb) bt  <----------- the big ticket item
+
+Note *where* the program died.  You can run the program now
+too and often you want to do that and try to run it to the
+point (just before) where it seems to do, and then step to/thru
+the "spot of death".
+
+Note:  you need to turn core dump on if off
+
+	% ulimit -a  <--- to check
+	% ulimit -c unlimited  <---- to turn on
+
+-------------------------------------------------------------
+attach variation:  see handout
+-------------------------------------------------------------
+gdb  (this is a checklist)
+
+	.a little history (very little)
+	.basic commands (Appendix 1, see below)
+	.debugging C++
+	.debugging parallel processes
+		use windows ...  one gdb, one thread/process
+	.core debugging (above)
+	.attach debugging (see handout)
+
+--------------------------------------------------------------
+Appendix 1:
+
+gdb commands by function - simple guide
 More important commands have a (*) by them.
 
 Startup 
-% gdb -help         	print startup help, show switches
-*% gdb object      	normal debug 
-*% gdb object core 	core debug (must specify core file)
-%% gdb object pid  	attach to running process
-% gdb        		use file command to load object 
+% gdb -help        print startup help, show switches
+*% gdb object         normal debug 
+*% gdb object core        core debug (must specify core file)
+%% gdb object pid        attach to running process
+% gdb        use file command to load object 
 
 Help
-*(gdb) help        	list command classes
-(gdb) help running      list commands in one command class
-(gdb) help run        	bottom-level help for a command "run" 
-(gdb) help info         list info commands (running program state)
-(gdb) help info line    help for a particular info command
-(gdb) help show         list show commands (gdb state)
+*(gdb) help        list command classes
+(gdb) help running        list commands in one command class
+(gdb) help run        bottom-level help for a command "run" 
+(gdb) help info        list info commands (running program state)
+(gdb) help info line        help for a particular info command
+(gdb) help show        list show commands (gdb state)
 (gdb) help show commands        specific help for a show command
 
 Breakpoints
-*(gdb) break main       set a breakpoint on a function
+*(gdb) break main        set a breakpoint on a function
 *(gdb) break 101        set a breakpoint on a line number
 *(gdb) break basic.c:101        set breakpoint at file and line (or function)
 *(gdb) info breakpoints        show breakpoints
-*(gdb) delete 1         delete a breakpoint by number
-(gdb) delete        	delete all breakpoints (prompted)
-(gdb) clear             delete breakpoints at current line
-(gdb) clear function    delete breakpoints at function
+*(gdb) delete 1        delete a breakpoint by number
+(gdb) delete        delete all breakpoints (prompted)
+(gdb) clear        delete breakpoints at current line
+(gdb) clear function        delete breakpoints at function
 (gdb) clear line        delete breakpoints at line
-(gdb) disable 2         turn a breakpoint off, but don't remove it
-(gdb) enable 2          turn disabled breakpoint back on
+(gdb) disable 2        turn a breakpoint off, but don't remove it
+(gdb) enable 2        turn disabled breakpoint back on
 (gdb) tbreak function|line        set a temporary breakpoint
-(gdb) commands break-no ... end   set gdb commands with breakpoint
-(gdb) ignore break-no count       ignore bpt N-1 times before activation
+(gdb) commands break-no ... end        set gdb commands with breakpoint
+(gdb) ignore break-no count        ignore bpt N-1 times before activation
 (gdb) condition break-no expression         break only if condition is true
 (gdb) condition 2 i == 20         example: break on breakpoint 2 if i equals 20
 (gdb) watch expression        set software watchpoint on variable
 (gdb) info watchpoints        show current watchpoints
 
 Running the program
-*(gdb) run        	run the program with current arguments
+*(gdb) run        run the program with current arguments
 *(gdb) run args redirection        run with args and redirection
 (gdb) set args args...        set arguments for run 
 (gdb) show args        show current arguments to run
-*(gdb) cont            continue the program
-*(gdb) step            single step the program; step into functions
-(gdb) step count       singlestep \fIcount\fR times
-*(gdb) next            step but step over functions 
-(gdb) next count       next \fIcount\fR times
-*(gdb) CTRL-C          actually SIGINT, stop execution of current program 
+*(gdb) cont        continue the program
+*(gdb) step         single step the program; step into functions
+(gdb) step count        singlestep \fIcount\fR times
+*(gdb) next        step but step over functions 
+(gdb) next count        next \fIcount\fR times
+*(gdb) CTRL-C        actually SIGINT, stop execution of current program 
 *(gdb) attach process-id        attach to running program
 *(gdb) detach        detach from running program
 *(gdb) finish        finish current function's execution
-(gdb) kill           kill current executing program 
+(gdb) kill        kill current executing program 
 
 Stack backtrace
-*(gdb) bt        	print stack backtrace
-(gdb) frame        	show current execution position
-(gdb) up        	move up stack trace  (towards main)
-(gdb) down        	move down stack trace (away from main)
-*(gdb) info locals      print automatic variables in frame
-(gdb) info args         print function parameters 
+*(gdb) bt        print stack backtrace
+(gdb) frame        show current execution position
+(gdb) up        move up stack trace  (towards main)
+(gdb) down        move down stack trace (away from main)
+*(gdb) info locals        print automatic variables in frame
+(gdb) info args        print function parameters 
 
 Browsing source
-*(gdb) list 101        	list 10 lines around line 101
-*(gdb) list 1,10        list lines 1 to 10
-*(gdb) list main  	list lines around function 
+*(gdb) list 101        list 10 lines around line 101
+*(gdb) list 1,10         list lines 1 to 10
+*(gdb) list main  list lines around function 
 *(gdb) list basic.c:main        list from another file basic.c
-*(gdb) list -        	list previous 10 lines
-(gdb) list *0x22e4      list source at address
-(gdb) cd dir        	change current directory to \fIdir\fR
-(gdb) pwd          	print working directory
-(gdb) search regexpr    forward current for regular expression
+*(gdb) list -        list previous 10 lines
+(gdb) list *0x22e4        list source at address
+(gdb) cd dir        change current directory to \fIdir\fR
+(gdb) pwd          print working directory
+(gdb) search regexpr        forward current for regular expression
 (gdb) reverse-search regexpr        backward search for regular expression
-(gdb) dir dirname       add directory to source path
-(gdb) dir        	reset source path to nothing
+(gdb) dir dirname        add directory to source path
+(gdb) dir        reset source path to nothing
 (gdb) show directories        show source path
 
 Browsing Data
 *(gdb) print expression        print expression, added to value history
 *(gdb) print/x expressionR        print in hex
 (gdb) print array[i]@count        artificial array - print array range
-(gdb) print $        	print last value
-(gdb) print *$->next    print thru list
-(gdb) print $1        	print value 1 from value history
+(gdb) print $        print last value
+(gdb) print *$->next        print thru list
+(gdb) print $1        print value 1 from value history
 (gdb) print ::gx        force scope to be global
 (gdb) print 'basic.c'::gx        global scope in named file (>=4.6)
-(gdb) print/x &main     print address of function
+(gdb) print/x &main        print address of function
 (gdb) x/countFormatSize address        low-level examine command
-(gdb) x/x &gx        	print gx in hex
-(gdb) x/4wx &main       print 4 longs at start of \fImain\fR in hex
-(gdb) x/gf &gd1         print double
-(gdb) help x        	show formats for x
-*(gdb) info locals      print local automatics only
-(gdb) info functions regexp         print function names
+(gdb) x/x &gx        print gx in hex
+(gdb) x/4wx &main    print 4 longs at start of \fImain\fR in hex
+(gdb) x/gf &gd1      print double
+(gdb) help x        show formats for x
+*(gdb) info locals        print local automatics only
+(gdb) info functions regexp        print function names
 (gdb) info variables  regexp        print global variable names
 *(gdb) ptype name        print type definition
 (gdb) whatis expression       print type of expression
 *(gdb) set variable = expression        assign value
 (gdb) display expression        display expression result at stop
 (gdb) undisplay        delete displays
-(gdb) info display     show displays
-(gdb) show values      print value history (>= gdb 4.0)
-(gdb) info history     print value history (gdb 3.5)
+(gdb) info display        show displays
+(gdb) show values        print value history (>= gdb 4.0)
+(gdb) info history        print value history (gdb 3.5)
 
 Object File manipulation
-(gdb) file object      		load new file for debug (sym+exec)
-(gdb) file             		discard sym+exec file info
+(gdb) file object        load new file for debug (sym+exec)
+(gdb) file object -readnow        no incremental symbol load
+(gdb) file       discard sym+exec file info
 (gdb) symbol-file object        load only symbol table
-(gdb) exec-file object 		specify object to run (not sym-file)
-(gdb) core-file core   		post-mortem debugging
+(gdb) exec-file object        specify object to run (not sym-file)
+(gdb) core-file core        post-mortem debugging
 
 Signal Control
-(gdb) info signals        	print signal setup
-(gdb) handle signo actions      set debugger actions for signal
-(gdb) handle INT print          print message when signal occurs
+(gdb) info signals        print signal setup
+(gdb) handle signo actions         set debugger actions for signal
+(gdb) handle INT print        print message when signal occurs
 (gdb) handle INT noprint        don't print message
-(gdb) handle INT stop        	stop program when signal occurs
-(gdb) handle INT nostop         don't stop program
-(gdb) handle INT pass        	allow program to receive signal
-(gdb) handle INT nopass         debugger catches signal; program doesn't
-(gdb) signal signo        	continue and send signal to program
-(gdb) signal 0        		continue and send no signal to program
+(gdb) handle INT stop        stop program when signal occurs
+(gdb) handle INT nostop        don't stop program
+(gdb) handle INT pass        allow program to receive signal
+(gdb) handle INT nopass        debugger catches signal; program doesn't
+(gdb) signal signo        continue and send signal to program
+(gdb) signal 0        continue and send no signal to program
 
 Machine-level Debug
-(gdb) info registers        	print registers sans floats
+(gdb) info registers        print registers sans floats
 (gdb) info all-registers        print all registers
-(gdb) print/x $pc        	print one register
-(gdb) stepi        		single step at machine level
-(gdb) si        		single step at machine level
-(gdb) nexti        		single step (over functions) at machine level
-(gdb) ni        		single step (over functions) at machine level
-(gdb) display/i $pc        	print current instruction in display
-(gdb) x/x &gx        		print variable gx in hex
-(gdb) info line 22        	print addresses for object code for line 22
-(gdb) info line *0x2c4e         print line number of object code at address
-(gdb) x/10i main        	disassemble first 10 instructions in \fImain\fR
-(gdb) disassemble addr          dissassemble code for function around addr
+(gdb) print/x $pc        print one register
+(gdb) stepi        single step at machine level
+(gdb) si        single step at machine level
+(gdb) nexti        single step (over functions) at machine level
+(gdb) ni        single step (over functions) at machine level
+(gdb) display/i $pc        print current instruction in display
+(gdb) x/x &gx        print variable gx in hex
+(gdb) info line 22        print addresses for object code for line 22
+(gdb) info line *0x2c4e        print line number of object code at address
+(gdb) x/10i main        disassemble first 10 instructions in \fImain\fR
+(gdb) disassemble addr        dissassemble code for function around addr
 
 History Display
-(gdb) show commands        	print command history (>= gdb 4.0)
-(gdb) info editing       	print command history (gdb 3.5)
-(gdb) ESC-CTRL-J        	switch to vi edit mode from emacs edit mode
+(gdb) show commands        print command history (>= gdb 4.0)
+(gdb) info editing       print command history (gdb 3.5)
+(gdb) ESC-CTRL-J        switch to vi edit mode from emacs edit mode
 (gdb) set history expansion on       turn on c-shell like history
 (gdb) break class::member       set breakpoint on class member. may get menu
 (gdb) list class::member        list member in class
 (gdb) ptype class               print class members
-(gdb) print *this        	print contents of this pointer
-(gdb) rbreak regexpr     	useful for breakpoint on overloaded member name
+(gdb) print *this        print contents of this pointer
+(gdb) rbreak regexpr     useful for breakpoint on overloaded member name
 
 Miscellaneous
 (gdb) define command ... end        define user command
-*(gdb) RETURN        		repeat last command
-*(gdb) shell command args       execute shell command 
-*(gdb) source file        	load gdb commands from file
-*(gdb) quit        		quit gdb
+*(gdb) RETURN        repeat last command
+*(gdb) shell command args        execute shell command 
+*(gdb) source file        load gdb commands from file
+*(gdb) quit        quit gdb
+
+-------------------------------------------------------------
+Appendix 2:
+
+Henry Spencer - 10 commandments for C programmers 
+------------------------------------------------- 
+Commandments copyright (c) 1988 Henry Spencer, University of Toronto.
+Used by permission.
+
+1.  Thou shalt run lint frequently and study its pronouncements
+with care, for verily its perception and judgement oft exceed thine.
+(Modern amendment: use ANSI C with prototypes where possible).
+
+2.  Thou shalt not follow the NULL pointer, for chaos and madness await
+thee at its end.
+
+3.  Thou shalt cast all function arguments to the expected type if they
+are not of that type already, even when thou art convinced that
+this is unnecessary, lest they take cruel vengeance upon thee
+when thou least expect it.
+
+4.  If thy header files fail to declare the return types of thy library
+functions, thou shalt declare them thyself with the most meticulous
+care, lest grevious harm befall thy program.
+
+5. Thou shalt check the array bounds of all strings (indeed, all arrays),
+for surely where thou typest *foo* someone someday shall type
+*supercalifragilisticexpialidocious*.
+
+6.  If a function be advertised to return an error code in the event of
+difficulties, thou shalt check for that code, yea, even though the
+checks triple the size of thy code and produce aches in thy
+typing fingers, for if thou thinkest "it cannot happen to me," the
+gods shall surely punish thee for thy arrogance.
+
+7.  Thou shalt study the libraries and strive not to re-invent them without
+cause, that thy code may be short and readable and thy days pleasant
+and productive.
+
+8. Thou shalt make thy program's purpose and structure clear to
+thy fellow man by using the One True Brace Style*, even if thou
+likest it not, for thy creativity is better used in solving problems
+than in creating beautiful new impediments to understanding.
+
+*(The One True Brace Style is the style of program layout demonstrated
+in K & R).
+
+.9 Thy external identifiers shall be unique in the first six characters,
+though this harsh discipline be irksome and the years of its necessity
+stretch before thee seemingly without end, lest thou tear thy hair out
+and go mad on that fateful day when thou desirest to make thy program 
+run on an old system.
+
+.10 Thou shalt foreswear, renounce, and abjure the vile heresy which
+claimeth that "All the world's a VAX", and have no commerce with
+the benighted heathens who cling to this barbarous belief, that
+the days of thy program may be long even though the days of thy
+current machine be short.  (Programs should be written to be portable 
+and with the assumption that the software will outlast the current
+hardware).
+
+JRB's supplementary rules:
+ 
+1.  Every open(2) should have an equal and opposite
+close(2).  Likewise, every fopen(3) should have a matching  
+fclose(3), and every malloc(3) should have a matching free(3).
+
+2.  ALWAYS be careful about NULL pointers and arguments to function calls
+that take strings.  Use assertions for dealing with NULL pointers. 
+See assert(3) for details.
+
+3. Be particularly careful with routines that can
+"accidentally" overwrite data or stack regions; avoid using these routines
+if possible.  For example, use fgets() rather than gets().
+strncpy(3) instead of strcpy(2).  Put limits in routines that you write.
+
+4.  Be careful with kernel calls, especially with pointers to buffers.
+The kernel blindly believes what you tell it and can easily overwrite
+parts of your stack or data space. If so, core dump.
+Something like this can happen to you:
+foo()
+{
+	int fd[1];
+	int x;		<---- why is this here?
+	pipe(fd);
+}
+
+5.  never ignore information the system gives you; segmentation
+violations are important, and give you a lot of information about what's
+going wrong (even more if you use the debugger to look at a core
+dump).  Don't rm -f core without making an attempt to determine
+what happened.
+	% gdb myproggoesboom core
+	(gdb) bt
+
+6.  Always check the error return code on system calls and library
+calls.  Read the man pages often and carefully.  Write them
+with care too.  If you write man pages, include examples.
+(Dangerously different...).
+
+7.  NEVER make assumptions like "This malloc could never fail."
+Of course it could.  Similar assumptions include "This
+file has to exist, so of course, the open can't fail.
+(Check out the access(2) call.)  Well-written programs
+have a lot of error-checking code.
+
+8. C programming style on UNIX is like this:
+	
+function foo
+	weed out error possibility A
+	weed out error possibility B
+	do the function
+
+Pascal is like this:
+	if (not A)
+		if (not B)
+			do the function
+		else
+	else
+	
