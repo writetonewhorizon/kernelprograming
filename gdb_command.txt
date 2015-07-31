@@ -1,4 +1,5 @@
 http://web.cecs.pdx.edu/~jrb/cs201/lectures/ 
+https://sourceware.org/gdb/onlinedocs/gdb/
 Debug Lecture
 
 1. overview
