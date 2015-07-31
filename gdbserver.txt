@@ -136,3 +136,48 @@ gdb
 (gdb) exec-file main
 (gdb) symbol-file main.debug
 
+
+gcc commands:
+-Wall : Enable all warning messages (recommended for all development work).
+-g  : enables use of extra debugging information that only GDB can use.
+-c : Compile or assemble the source les, but do not link. The linking stage simply is not done.
+    The ultimate output is in the form of an object le for each source le. By default, the
+    object le name for a source le is made by replacing the sux '.c', `.i', `.s', etc., with
+    `.o'. E.g.,
+    gcc c myprog.c
+    produces myprog.o.
+-s : Stop after the stage of compilation proper; do not assemble. The output is in the form of
+    an assembler code le for each non-assembler input le specied. By default, the assembler
+    le name for a source le is made by replacing the sux `.c', `.i', etc., with `.s'. It is
+    unlikely that you will need to do this, but it is educational to look at the output of the
+    compiler, which is in assembly language.
+-E : Stop after the preprocessing stage; do not run the compiler proper. The output is in the
+    form of preprocessed source code, which is sent to the standard output. E.g.,
+    gcc E myprog.c > myprog.i
+    This is also an educational exercise  you can see for yourself what the preprocessor does
+    to your source code, to get a better understanding of how to use it.
+-o : file Place output in le file . This applies regardless of whatever sort of output is being
+    produced, whether it is an executable le, an object le, an assembler le or preprocessed
+    C code. Usually you use this to name your executable. E.g.,
+    gcc o myprog myprog.c
+-v : Print (on standard error output) the commands executed to run the stages of compilation.
+    Also print the version number of the compiler driver program and of the preprocessor and
+    the compiler proper.
+--help  : Print (on the standard output) a description of the command line options understood by gcc.
+
+-llibrary : Search the library named library when linking.
+-L  Add dir to gcc's search path for libraries.
+-I  where gcc looks for header files.
+    For example, suppose that the program myprog.c makes a call to a function named log_error() that is
+    declared in the my_utilities.h header le and is dened in the library libutilities.a located in the
+    directory ~/my_libs. You could write:
+
+gcc -o myprog myprog.c -I ~/my_includes -lutilities -L ~/my_libs
+OR
+gcc -o myprog myprog.c -I ~/my_includes -l ~/my_libs/libutilities.a
+
+Environment Variables Aecting GCC :
+C_INCLUDE_PATH : A colon-separated list of directories in which to look for include les for C programs.
+LIBRARY_PATH : A colon-separated list of directories that the linker uses to look for static libraries.
+LD_LIBRARY_PATH : A colon-separated list of directories that the linking loader uses to look for dynamic libraries.
+
