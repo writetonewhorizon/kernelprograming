@@ -106,3 +106,33 @@ The program no longer exists.
 The program is not being run.
 (gdb) 
 
+commands : 
+gdbserver
+target remote 172.17.0.11:45
+file /home/dus5cob/bosch/dus5cob_AI_PRJ_G3G_LINUX_15.0F22.vws_GEN/ai_projects/generated/bin/gen3x86make/debug/procoedt_out.out
+set sysroot /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/
+set solib-search-path /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/lib/
+info sharedlibrary
+info sources
+file  sharedobject [to check whether unstriped file have debugging symboles or not]
+set verbose on
+break oedt_Cd_TestFuncs.c:OEDT_CD_T151
+
+file /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/lib/libuuid.so.1.3.0
+readelf --debug-dump=info /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/lib/libuuid.so.1.3.0
+
+objdump --syms ... | grep debug
+objdump --debugging libinspected.so
+
+gcc -g -o main main.c
+objcopy --only-keep-debug main main.debug
+strip --strip-debug --strip-unneeded main
+objcopy --add-gnu-debuglink main.debug main
+
+
+gdb -s main.debug -e main
+or
+gdb
+(gdb) exec-file main
+(gdb) symbol-file main.debug
+
