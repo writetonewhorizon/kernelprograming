@@ -715,4 +715,28 @@ Tip: Never move a file in the kernel source unless you know what you are doing. 
 The Linux kernel folder structure has remained relatively constant. The kernel developers have made some modifications, but overall, this setup is the same throughout all kernel versions. The driver folder's layout also remains about the same
 
 
+The Permission Groups used are:
+u - Owner
+g - Group
+o or a - All Users
+chmod u=rwx,g=rx,o=r file or chmod 754 file
+r=4, w=2, x=1.
+-rwxr-xr-x 
+
+
+The special permissions flag can be marked with any of the following: 
+_ - no special permissions
+d - directory
+l - The file or directory is a symbolic link
+s - This indicated the setuid/setgid permissions. This is not set displayed  in the special permission part of the permissions display, but is represented as a s in the read portion of the owner or group permissions.
+t - This indicates the sticky bit permissions. This is not set displayed in the special permission part of the permissions display, but is represented as a t in the executable portion of the all users permissions
+
+how the optimal permissions should be set.
+home directories - The users\' home directories are important because you do not want other users to be able to view and modify the files in another user\'s documents of desktop. To remedy this you will want the directory to have the drwx______ (700) permissions, so lets say we want to enforce the correct permissions on the user user1\'s home directory that can be done by issuing the command chmod 700 /home/user1.
+bootloader configuration files - If you decide to implement password to boot specific operating systems then you will want to remove read and write permissions from the configuration file from all users but root. To do you can change the permissions of the file to 700.
+system and daemon configuration files - It is very important to restrict rights to system and daemon configuration files to restrict users from editing the contents, it may not be advisable to restrict read permissions, but restricting write permissions is a must. In these cases it may be best to modify the rights to 644.
+firewall scripts - It may not always be necessary to block all users from reading the firewall file, but it is advisable to restrict the users from writing to the file. In this case the firewall script is run by the root user automatically on boot, so all other users need no rights, so you can assign the 700 permissions.
+
+Change the ownership to newuser and group to newgroup for all of the files and directories in current directory, and all subdirectories (recursively).
+ $ chown -R newuser:newgroup .
 
