@@ -44,6 +44,7 @@ halt, reboot: control system
 hotplug: manage the adding/removal of hardwarel
 modinfo module_name
 modprobe --show-depends module_name
+or cat /lib/modules/kernel-version/modules.dep 
 
 
 systemctl get-default 
