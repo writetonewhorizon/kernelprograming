@@ -1,0 +1,231 @@
+BSP :
+TARGET  := adc_inc
+WARN    := -W -Wall -Wstrict-prototypes -Wmissing-prototypes
+INCLUDE := -isystem /lib/modules/`uname -r`/build/include
+CFLAGS  := -O2 -DMODULE -D__KERNEL__ ${WARN} ${INCLUDE}
+CC      := gcc-3.0
+
+make -C <full path of kernel source tree> SUBDIRS=<full path of module code> modules
+gcc -DMODULE -D__KERNEL__ -isystem /lib/modules/$(uname -r)/build/include -c hello.c -o hello.ko
+
+KERNEL_VERSION="3.8.13.28-04515-gf601d7e-dirty"
+MODULES_INSTALL_PATH="/home/dharmender/Desktop/kernel_modules"
+NUM_PARALLEL_JOB=( 'nproc' * 2 )
+ARCH="arm"
+CROSS_COMPILE="/opt/tooling/codesourcery/MGC-2013.11-73-gcc-4.8.1/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi-"
+or
+#make ARCH=arm imx_v6_v7_defconfig or x86_platform_production_defconfig
+#make ARCH=arm CROSS_COMPILE=/opt/tooling/codesourcery/MGC-2013.11-73-gcc-4.8.1/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/arm-none-linux-gnueabi- menuconfig
+make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE LOADADDR=0x12000000 uImage
+make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE modules
+make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE dtbs
+
+cp arch/arm/boot/uImage ${VIEW_PATH}/${KERNEL_IMAGE_PATH}
+make modules_install ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=$MODULES_INSTALL_PATH > /dev/null
+
+by default compiled[installed] modules dir is INSTALL_MOD_PATH =/lib/modules/[kernel version + CONFIG_LOCALVERSION]/
+
+cd $MODULES_INSTALL_PATH/lib/modules/
+find . -iname "*\.ko" | xargs ${CROSS_COMPILE}strip --strip-debug [ Remove debugging symbols to reduce size of modules]
+Note : Stripping debugging symbols with strip --strip-debug *.ko (= strip -g *.ko) is safe. 
+The kernel makefile does it for you if you run make INSTALL_MOD_STRIP=1 modules_install.
+
+echo "Creating modules tarball..."
+tar -cjvf "${KERNEL_VERSION}.tar.bz2" "${KERNEL_VERSION}" > /dev/null
+
+kernel space :
+lspci: list PCI devices
+lsusb: list USB devices
+fdisk: partition disk
+hdparm: set disk parameters
+ifconfig, iwconfig: configure network interface
+dmesg, insmod, modprobe, rmmod, lsmod: manage modules
+halt, reboot: control system
+hotplug: manage the adding/removal of hardwarel
+modinfo module_name
+modprobe --show-depends module_name
+
+
+systemctl get-default 
+systemctl --failed
+systemctl list-units --type=target -all
+systemctl --no-pager
+systemctl list-dependencies rescue.target
+systemctl status 
+systemctl show   
+systemctl daemon-reload
+systemd-analyze critical-chain
+systemd-analyze dot
+systemd-analyze plot > something.svg
+journalctl
+systemd-cgtop
+systemd-cgls
+ 
+mount -t type dev dir
+sg_start --eject /dev/sr0
+sg_start --load /dev/scd0
+
+gernel commands :
+df -ah
+du -sch /*
+grep -nri string dir
+grep -rnw 'directory' -e "pattern"
+find . | grep '\.xml' | xargs grep -in start_bosch.service
+find . -iname *str* | grep str
+find dir -iname file
+find dir -type f -perm 0777 -print -exec chmod 644 {} \;
+ps -auxf
+wheris and whatis
+ln -s targetfile linkname
+sudo mount -o remount,rw /partition/identifier /mount/point
+
+strings 
+Listing the System's Start-Up Time : systemd-analyze
+Listing the Services Start-Up Time : systemd-analyze blame
+Services Start-Up Time Graphics : systemd-analyze plot > jupiter.example.com-startup.svg
+chown owner:group  dir/
+
+perl -d ( which build.pl ) --lsim component name
+perl ${_SWNAVIROOT}/tools/prj_dnl/prepare_lsim.pl
+
+related to git 
+git command --help
+git clone gitdir lodir
+git branch -a
+git checkout brname
+git pull
+git reset --soft <commit>
+git clean -f   to remove untracked file
+git reset --soft HEAD^ : Removing the last commit but changes in file will be there.
+git reset --hard @{u}  : Discarding all local commits on this branch but changes you will not get back
+git reset --hard HEAD^ : Removing the last commit
+git reset --hard HEAD~2 : remove last two commit
+git log --pretty=oneline
+git log -p -1 hashvalue
+git show pointer
+git add file or dir
+git status
+git commit -s 
+git commit --amend -m "message"   : Updating the last commit's contents or commit message
+git format-patch -n <commit>
+git push ssh://dus5cob@fe0vm142.de.bosch.com:29418/fastboot-userland-imx.git HEAD:refs/for/development-38
+git apply --stat patch
+git apply --check patch
+git commit --amend
+git am --signoff < patch
+gitk --all --date-order  or git log --all or git log --graph --decorate --oneline --all  to know the SHA (hash ID)of commit
+git diff commit1 commit2
+git checkout -- filename undo or discard the previous changes of a file
+git log --pretty=format:"%ci (%h): %s" rootfs_lsim or dir to know number of patches applied to a dir or project
+git log --pretty=format:"%ci (%h): %s" rootfs or git log --pretty=oneline rootfs_lsim
+git stash  to remove 
+
+
+git clean -f to remove untracked file
+
+BSP
+1.git checkout -b branchname
+2.export PATH=/opt/tooling/CodeSourcery/Sourcery_CodeBench_for_ARM_GNU_Linux/bin/:$PATH
+3.export ARCH=arm
+export CROSS_COMPILE=arm-none-linux-gnueabi-
+4. make configfile
+5 make -j8
+
+run time debugging : userspace
+stat filename
+strace -e open ls
+lsof | morel
+htop 
+ps -auxf
+readelf
+nm
+size
+objdump
+ltrace
+strings
+strip
+ld
+file
+ldd
+ldd $(which nm)
+ldconfig -v to print all shared object library and path
+ltrace -S -tt ./executable
+to get debugging help
+LD_DEBUG=help  dynamic executable
+to get all info
+LD_DEBUG=all  dynamic executable
+LD_DEBUG=libs,versions testApp -m
+to take output in a file
+LD_DEBUG_OUTPUT=sym.log LD_DEBUG=bindings  dynamic executable 
+
+gdb thread debugging
+
+gcc -g -o executable name filename  -lpthread
+./exectablename
+ps -aux | grep executable name
+gdb -pid pidnumber 
+
+gdbserver
+target remote 172.17.0.11:45
+file /home/dus5cob/bosch/dus5cob_AI_PRJ_G3G_LINUX_15.0F22.vws_GEN/ai_projects/generated/bin/gen3x86make/debug/procoedt_out.out
+set sysroot /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/
+set solib-search-path /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/lib/
+info sharedlibrary
+info sources
+file  sharedobject [to check whether unstriped file have debugging symboles or not]
+set verbose on
+break oedt_Cd_TestFuncs.c:OEDT_CD_T151
+
+file /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/lib/libuuid.so.1.3.0
+readelf --debug-dump=info /opt/tooling/x86-staging/DI_BINARY_REPOSITORY_IMX6_LINUX_15.0F27.1/lib/libuuid.so.1.3.0
+
+objdump --syms ... | grep debug
+objdump --debugging libinspected.so
+
+gcc -g -o main main.c
+objcopy --only-keep-debug main main.debug
+strip --strip-debug --strip-unneeded main
+objcopy --add-gnu-debuglink main.debug main
+
+
+gdb -s main.debug -e main
+or
+gdb
+(gdb) exec-file main
+(gdb) symbol-file main.debug
+
+Table 1. Most commonly used commands for gdb
+Command	Description	Example
+help			List classes of commands	help - to list classes of commands
+help breakpoints - 		list commands belonging to breakpoints class
+help break - 		description of break command
+run				Start the debugged program	 
+kill			Kill execution of program being debugged	Usually it is used when the execution line has been passed where the code you want to debug. Issue kill, reset the breakpoints, and run the program again to start over.
+		
+cont			Continue execution of the debugged application after a breakpoint, exception, or step.	 
+info break		Display the current breakpoints or watchpoints.	 
+break			Set breakpoint at specified line or function	break 93 if i=8 - to stop the program execution at line 93 when the variable i is equal to 8.
+Step			Step the program until it reaches a different source line. You can use s to abbreviate the step command.	 
+Next			Like the step command, except it does not "step into" subroutines	 
+print			Print the value of a variable or an expression	print pointer - print the content of variable pointer.
+print *pointer - 		print the content of the data structure the pointer is pointing to.
+delete			Delete some breakpoints or auto-display expressions	delete 1 - to delete breakpoint number 1. The breakpoints can be displayed by info break.
+watch			Set a watchpoint for an expression. A watchpoint stops execution of your program whenever the value of an expression changes.	 
+where			Print backtrace of all stack frames	where - with no arguments, dumps the stack of the current thread.
+where all - 		dumps the stack of all threads in the current thread group.
+where threadindex - 		dumps the stack of the specified thread.
+attach			Start viewing an already running process	attach <process_id> - attach the process with process_id. process_id can be found by the ps command.
+info thread		Show currently running threads	 
+thread apply threadno command			Run gdb command on a thread	thread apply 3 where - run the where command on the thread 3
+Thread threadno			Select a thread to be the current thread
+
+valgrind
+ g++ -g -Wall -Wextra -pedantic test1.cpp -o test1
+valgrind -v --tool=memcheck --leak-check=yes --leak-check=full --show-reachable=yes --num-callers=20 --track-fds=yes --track-origins=yes --num-callers=50 --db-attach=yes  ./test
+
+shared library creation:
+
+g++ -ggdb -fPIC -shared lib.cpp -o libTest.so
+g++ -ggdb main.cpp libTest.so -o testApp -Wl,--rpath='$ORIGIN'
+
+
