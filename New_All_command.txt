@@ -46,6 +46,144 @@ modinfo module_name
 modprobe --show-depends module_name
 or cat /lib/modules/kernel-version/modules.dep 
 
+Building kernel :
+install git version control system:
+$ sudo apt-get install git-core
+$ sudo apt-get install libncurses5-dev
+The kernel image and initrd and config info
+ls –al /boot
+•	vmlinuz-2.6.35-kwlug+: The compressed, bootable kernel image
+•	initrd.img-2.6.35-kwlug+: The initial ram disk -- an early root filesystem that allows your kernel to bootstrap and get essential device drivers to get to the final, official root filesystem
+•	config-2.6.35-kwlug+: The record of the configuration
+parameters for that kernel
+The kernel-specific loadable modules
+$ ls /lib/modules
+The GRUB configuration file
+$ cat /boot/grub/grub.cfg
+Getting the kernel source
+$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6.git linux-2.6
+You do not need root/superuser access to download a kernel source tree, or to configure it, or to build it. You will need root privilege only to install the final product(s) in /boot and to upgrade the GRUB configuration file. But until then, you have no need for root privilege
+The configuration process
+make help
+
+pre-defined configurations
+$ find arch -name "*defconfig"
+
+To configure manually :
+$ make menuconfig
+
+To use existing kernel configuration 
+$ cp /boot/config-2.6.32-22-generic .config
+Naming your new kernel
+Vim Makefile :
+VERSION = 2
+PATCHLEVEL = 6
+SUBLEVEL = 35
+EXTRAVERSION = -rc2
+NAME = Sheep on Meth
+To see running kernel version command : uname –r 
+Doing the build
+$ make
+Installing your new kernel and modules
+What needs to be done : 
+•  Install the new (compressed) kernel image into the /boot directory so that GRUB can find it at boot time 
+•  Create (somehow) a new initrd initial ram disk that goes along with that kernel to support the early part of the boot process 
+•  Install all of the newly-built modules, which should show up under a new directory under the /lib/modules directory 
+•  Finally, run whatever command is appropriate to update the GRUB configuration file on your system to add entries for your new kernel so it can be selected from the GRUB menu at system startup
+$ sudo make modules_install
+Or for stripted file so that modules will take less space.
+$ make INSTALL_MOD_STRIP=1 modules_install
+Or after installed kernel to stiped form :
+$ find <<modules_folder>> -name "*.ko" -exec strip --strip-unneeded {}\;
+$ sudo make install
+$ sudo update-initramfs -c -k 2.6.35-crash+
+$ sudo update-grub
+make-kpkg that allows you to take your build results and turn it into a dpkg-installable package
+Take a deep breath and ... reboot!
+remove every vestige of your build:
+$ make distclean
+Linux Kernel Modules - Load, Unload, Configure
+Linux allows the Kernel to be configured at run time, to enable or disable different services as you see fit. This way you don't have to compile a monolithic kernel, and can save some memory usage. Some modules you'll only need for a short time, others you'll need all the time. You can configure your Linux machine to load kernel modules on startup so you don't have to remember to do that when (if) you reboot. 
+Module Commands
+There are a few commands that allow you to maniuplate the kernel. Each is quickly described below, for more information say `man [command]`. 
+
+depmod - handle dependency descriptions for loadable kernel modules.
+insmod - install loadable kernel module.
+lsmod - list loaded modules.
+modinfo - display information about a kernel module.
+modprobe - high level handling of loadable modules.
+•	rmmod - unload loadable modules.
+Using Module Commands
+# Show the module dependencies.
+depmod -n
+
+# Install some module
+insmod --autoclean [modnam]
+
+# This lists all currently loaded modules, lsmod takes no useful parameters
+lsmod or
+sudo modeprobe -l
+
+# Display information about module eepro100
+modinfo --author --description --parameters eepro100
+
+# Removing a module (don't use the example)
+rmmod --all --stacks ip_tables
+
+# how to know thw dependencies of kernel module :
+Lsmod ,modinfo  module,  vim /lib/modules/version/modules.dep 
+sudo modprobe --show-depends modulename
+
+To display the configuration of a particular module: 
+$ modprobe -c | grep module_name
+Module Configuration Files
+The kernel modules can use two different methods of automatic loading. The first method (modules.conf) is my preferred method, but you can do as you please. 
+modules.conf - This method load the modules before the rest of the services, I think before your computer chooses which runlevel to use
+rc.local - Using this method loads the modules after all other services are started
+Using 'modules.conf' will require you to say `man 5 modules.conf`. Using 'rc.local' requires you to place the necessary commands (see above) in the right order. 
+Sample modules.conf
+# modules.conf - configuration file for loading kernel modules
+# Create a module alias parport_lowlevel to parport_pc
+alias parport_lowlevel parport_pc
+# Alias eth0 to my eepro100 (Intel Pro 100)
+alias eth0 eepro100
+# Execute /sbin/modprobe ip_conntrack_ftp after loading ip_tables
+post-install ip_tables /sbin/modprobe ip_conntrack_ftp
+# Execute /sbin/modprobe ip_nat_ftp after loading ip_tables
+post-install ip_tables /sbin/modprobe ip_nat_ftp
+
+
+Sample rc.local
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+/sbin/insmod ip_tables
+/sbin/modprobe ip_conntrack_ftp
+/sbin/modprobe ip_nat_ftp
+Conclusion
+You should see/know that modules are necessary. They can be loaded via 'modules.conf' or 'rc.local', but 'modules.conf' load them first and 'rc.local' loads them last. Using the various module commands you can add, remove, list or get information about modules. 
+Enabling in Kernel Config For Tracing
+To enable the dump_stack() function in the kernel config the following options must be set. You can use make menuconfig or make xconfig to do this. 
+1.	Kernel hacking -> Kernel debugging
+2.	Kernel hacking -> Verbose kernel error messages
+Enabling these two options will change the dump_stack() function from a do nothing function to dumping the stack. 
+You need to rebuild your Linux kernel image after enabling these options. 
+Ftrace :	http://www.opensourceforu.com/2010/11/kernel-tracing-with-ftrace-part-1/
+Debugfs:	http://www.opensourceforu.com/2010/10/debugging-linux-kernel-with-debugfs/ 
+Gdb:	https://www.linux.com/learn/linux-training/33991-the-kernel-newbie-corner-kernel-and-module-debugging-with-gdb
+http://www.elinux.org/Debugging_The_Linux_Kernel_Using_Gdb 
+Kgdb:	http://www.opensourceforu.com/2011/09/kernel-space-debuggers-in-linux/ 
+
+
+
+
+
+
+
+
 
 systemctl get-default 
 systemctl --failed
@@ -228,5 +366,353 @@ shared library creation:
 
 g++ -ggdb -fPIC -shared lib.cpp -o libTest.so
 g++ -ggdb main.cpp libTest.so -o testApp -Wl,--rpath='$ORIGIN'
+
+LIST Of  Device Drivers:
+Device = Hardware ,		Device Driver= interface b/w hardware and OS/program
+Device Class:
+Character , Block and Network. 
+accessibility - These drivers offer support for accessibility devices. In Linux kernel 3.9.4, only one driver is in this folder, and that is the braille device driver.
+
+acpi - The Advanced Configuration and Power Interface (ACPI) drivers manage power usage.
+
+amba - Advanced Microcontroller Bus Architecture (AMBA) is a protocol for the management and interconnection in a System-on-Chip (SoC). A SoC is a single chip that contains many or all essential components of a computer in one chip. The AMBA drivers in this folder allow the kernel to run on these chips.
+
+ata - This directory contains drivers for PATA and SATA devices. Serial ATA (SATA) is a computer bus interface that connects host bus adapters to storage devices like hard-drives. Parallel ATA (PATA) is a standard for connecting storage devices like hard-drives, floppy drives, and optical disc drives. PATA is commonly known as IDE.
+
+atm - Asynchronous Transfer Mode (ATM) is a standard for telecommunications. There are a variety of drivers in here from PCI bridges (they connect to PCI buses) and Ethernet controllers (integrated circuit chip that controls Ethernet communications).
+
+auxdisplay - This folder provides three drivers - LCD framebuffer driver, LCD Controller driver, and a LCD driver. These drivers manage Liquid Crystal Display monitors. LCD monitors are the screens that ripple when pressed. NOTE: The screen can be damaged when pressed, so do not poke of push on LCD screens.
+
+base - This is an important directory that contains essential base drivers for firmware, the system bus, hypervisor abilities, etc.
+
+bcma - These are drivers for buses that use a protocol that are based on the AMBA protocol. These new buses are made by Broadcom.
+
+block - These drivers provide the kernel with support for block devices like floppy-disk readers, SCSI tapes, block devices over TCP, etc.
+
+bluetooth - Bluetooth is a secure wireless standard for Personal Area Networks (PANs). The bluetooth drivers are in this folder and allow the system to use the different bluetooth devices. For example, a bluetooth mouse lacks a cable, and the computer has a dongle (small USB receiver). The Linux system must be able to understand the mouse signals that are coming in through the dongle. Otherwise, the bluetooth device would not work.
+
+bus - This directory contains three drivers. One converts the ocp interface protocol to scp protocol. The other is a driver for interconnection between devices and the third driver is error handling for interconnection.
+
+cdrom - Two drivers exist in this directory. One is for cd-roms - this includes reading and writing DVDs and CDs. The driver second is for gd-roms (Gigabyte Disc Read-Only Memory). A GD is an optical disc with a 1.2GB storage capacity. This is like a large CD or small DVD. GDs are commonly used in Dreamcast game consoles.
+
+char - Character device drivers are stored here. Character devices transmit data one character at a time. Some included drivers in the folder are printers, PS3 flash ROM storage driver, Toshiba SMM drivers, and random number generator driver.
+
+clk - These drivers are for the system clock.
+
+clocksource - These drivers use the clock as a timer.
+
+connector - These drivers supply the kernel with the ability to know when processes fork and execute as well as changing the UID (User ID), GID (Group ID), and SID (session ID) using what is called a proc connector. The kernel needs to know when process fork (run multiple tasks in the CPU) and execute. Otherwise, the kernel may have inefficiencies in managing resources.
+
+cpufreq - These drivers control the CPU by changing power consumption.
+
+cpuidle - These drivers manage the idleness of the CPU/s. If the system uses multiple CPUs, then one of the drivers will try to keep the idleness the same.
+
+crypto - These drivers provide cryptographic features like encryption.
+
+dca - Direct Cache Access drivers allow the kernel to access the CPU cache. The CPU cache is like a RAM storage built into the CPU chip. The CPU cache is faster than the RAM chip. However, the CPU cache has a much lower space capacity than the RAM. The CPU stores the most important and executed code on this cache system.
+
+devfreq - This driver provides a Generic Dynamic Voltage and Frequency Scaling (DVFS) Framework which changes the CPU frequency as needed to conserve energy. This is known as CPU throttling.
+
+dio - The Digital Input/Output bus drivers allow the kernel to use DIO buses.
+
+dma - The Direct memory access (DMA) driver allows devices to access without needing the CPU. This reduces the load on the CPU.
+
+edac - The Error Detection And Correction drives help reduce and correct errors.
+
+eisa - The Extended Industry Standard Architecture drivers provide EISA bus support to the kernel.
+
+extcon - The EXTernal CONnectors driver detects changes in the ports when a device is plugged in. For instance, extcon will detect if a user plugs in a USB drive.
+
+firewire - These drivers control FireWire devices which are USB-like devices made by Apple.
+
+firmware - These drivers communicate with the firmware of the device like the BIOS (the Basic Input Output System firmware of a computer). The BIOS is used to boot up the operating system and control the hardware and firmware of the device. Some BIOS systems allow user's to overclock the CPU. Overclocking is making the CPU operate at a faster speed. The CPU speed is measured in MHz (Mega-Hertz) or GHz. A CPU with a clock speed of 3.7GHz is significantly faster than a 700MHz processor.
+
+gpio - General Purpose Input/Output (GPIO) is a generic pin on a chip whose behavior can be controlled by the user. The drivers here control GPIO.
+
+gpu - The drivers in this folder control the Video Graphics Array (VGA), Graphics Processing Unit (GPU), and Direct Rendering Manager (DRM). VGA is the 640×480 resolution analog computer displays or simply the resolution standard. A GPU is a processor for graphics. DRM is a rendering system for Unix systems.
+
+hid - These drivers provide support for USB Human Interface Devices.
+
+hsi - This driver offers the kernel the ability to access the cellular modem on the Nokia N900.
+
+hv - These drivers provide Key Value Pair (KVP) functionality to Linux systems.
+
+hwmon - The HardWare MONitoring drivers allow the kernel to get the readings from sensors in the hardware. For example, the CPU has a thermometer. The kernel can then keep track of the temperature and change the fan speed accordingly.
+
+hwspinlock - The hardware spinlock drivers allow systems to use two or more processors that are different or a single processor with two or more different cores.
+
+i2c - I2C drivers enable the I2C protocol which handle low-speed peripherals attached to the motherboard. The System Management Bus (SMBus) driver manages SMBuses which is a single two-wire bus for lightweight communication.
+
+ide - These drivers are for PATA/IDE devices like cdroms and hard-drives.
+
+idle - This driver manages the idleness of Intel processors.
+
+iio - The Industrial I/O core drivers handle analog to digital or digital to analog converters.
+
+infiniband - Infiniband is a high-performance port used by enterprise datacenters and some supercomputers. The drivers in this directory support Infiniband hardware.
+
+input - This directory contains many drivers. All of the drivers deal with input and some include drivers for joysticks, mice, keyboards, gameport (old joystick connectors), remotes, haptic controllers, headphone buttons, and many others. Joysticks today use USB ports, but in the 1980s and 1990s, joysticks plugged into gameports.
+
+iommu - Input/Output Memory Management Unit (IOMMU) drivers manage the IOMMU which is a form of Memory Management Unit (MMU). The IOMMU connects a DMA-capable I/O bus to the RAM. The IOMMU is the bridge between devices and access to the RAM without help from the CPU. This helps to reduce the processors load.
+
+ipack - Ipack stands for IndustryPack. This driver is for a virtual bus that allows operations between carrier and mezzanine boards.
+
+irqchip - These drivers allow interrupt requests (IRQ) which are hardware signals sent to the processor that temporarily stop a running program for a special program(called an interrupt handler) to run instead.
+
+isdn - These drivers support Integrated Services Digital Network (ISDN) which is a set of communication standards for simultaneous digital transmission of voice, video, data, and other network services using traditional circuits of the telephone network.
+
+leds - These drivers support LEDS.
+
+lguest - The lguest drivers manage interrupts that are used with guest operating system. Interrupts are hardware or software signals that interrupt the CPU for important tasks. The CPU then gives the hardware or software some processing resources.
+
+macintosh - Drivers for Apple devices belong in this directory.
+
+mailbox - The driver in this folder (pl320-pci) manages connections for mail systems.
+
+md - The Multiple Devices driver supports RAID (Redundant Array of Independent Disks) - a system of many hard-drives sharing or replicating data.
+
+media - The media drivers offer support in radios, tuners, video capturers, DVB standards for digital television, etc. The drivers also support various media devices that plug in through USB or FireWire ports.
+
+memory - This important driver supports the RAM.
+
+memstick - This driver supports Sony memorysticks.
+
+message - These drivers are to be used with LSI PCI chip/adapter(s) running LSI Fusion MPT (Message Passing Technology) firmware. LSI stands for Large-Scale Integration which are integrated circuits with tens of thousands of transistors per chip.
+
+mfd - MultiFunction Device (MFD) drivers provide support for multifunction devices which are devices that provide multiple services like email, fax, copy machine, scanner, and printer. The drivers in here also add a generic MCP (Multimedia Communications Port) layer which is a protocol for MFDs.
+
+misc - This directory contains miscellaneous drivers that do not fit in any other category like light sensor drivers.
+
+mmc - MultiMediaCard (MMC) drivers handle the MMC standard that is used in flash memory cards.
+
+mtd - Memory technology devices (MTD) are drivers used in Linux for interacting with flash memory like a Flash Translation Layer. Other block and character drivers do not map the same way flash memory devices operate. Although USB memory cards and SD cards are flash drives, they do not use this driver because they are hidden from the system behind a block device interface. This driver is a generic flash drive driver for new flash devices.
+
+net - The network drivers provide network protocols like Appletalk, TCP, and others. The drivers also support modems, USB 2.0 Ethernet Devices, and radio devices.
+
+nfc - This driver is the interface between Texas Instrument's Shared Transport Layer and NCI core.
+
+ntb - The Non-Transparent Bridging driver provides non-transparent bridging in PCI express (PCIe) systems. PCIe is a high-speed expansion bus standard.
+
+nubus - NuBus is a 32-bit parallel computer bus. The driver supports this Apple device.
+
+of - This driver provides OF helpers which are procedures for creating, accessing and interpreting the device tree. The Device Tree is a data structure for describing hardware.
+
+oprofile - This driver profiles the whole system from drivers to user-space processes (applications running under the user's name). This helps developers find performance problems.
+
+parisc - These drivers are for PA-RISC devices which are made by HP. PA-RISC is a specific instruction set for processors.
+
+parport - The Parport drivers provides parallel-port support under Linux.
+
+pci - These drivers offer PCI bus services.
+
+pcmcia - These are laptop motherboard drivers.
+
+pinctrl - These drivers handle pin control devices. Pin controllers can disable and enable I/O devices.
+
+platform - This directory contains drivers for the different computer platforms like Acer, Dell, Toshiba, IBM, Intel, ChromeBooks, etc.
+
+pnp - The Plug-aNd-Play drivers allow users to plug in a device, like a USB device, and use it immediately without the need to manually configure the device.
+
+power - The power drivers allow the kernel to measure the battery power, detect chargers, and power management.
+
+pps - Pulse-Per-Second drivers control an electrical pulse rate that is used for time keeping.
+
+ps3 - These are the drivers for Sony's game console - Playstation3.
+
+ptp - Picture Transfer Protocol (PTP) drivers support a protocol for transferring images from digital cameras.
+
+pwm - Pulse-width modulation (PWM) drivers control the pulse of the electricity to devices, mainly motors like the CPU fan.
+
+rapidio - RapidIO drivers manage the RapidIO architecture which is a high-performance packet-switched, interconnect technology for interconnecting chips on a circuit board, and also circuit boards to each other using a backplane.
+
+regulator - The regulator drivers regulate the electricity, temperature, and any other regulator hardware that may exist on a system.
+
+remoteproc - These drivers manage remote processors.
+
+rpmsg - These drivers control Remote Processor MeSsaginG buses which can support a number of drivers. These buses supply the messaging infrastructure, facilitating client drivers to write their own wire-protocol messages.
+
+rtc - The Real Time Clock (RTC) drivers allow the kernel to read the clock.
+
+s390 - The drivers are for the 31/32-bit mainframe architecture.
+
+sbus - The SPARC-based buses are managed by these drivers.
+
+scsi - SCSI drivers allow the kernel to use the SCSI standard with peripheral devices. For instance, Linux would be using a SCSI driver when it transmits data with a SCSI hard-drive.
+
+
+sfi -The Simple Firmware Interface (SFI) drivers allow firmware to send tables of information to the operating system. These tables of data are called SFI tables.
+
+sh - These drivers are for SuperHyway buses.
+
+sn - These drivers add support for IOC3 serial ports.
+
+spi - These drivers handle the Serial Peripheral Interface Bus (SPI bus) which is a synchronous serial data link standard that operates in full duplex mode. Full duplex mode is seen when two devices can both send and receive information at the same time. Duplex refers to two-way communication. Devices communicate in master/slave mode (device configuration).
+
+ssb - Sonics Silicon Backplane drivers provide support for a mini-bus used on various Broadcom chips and embedded devices.
+
+staging - This directory contains numerous subdirectories with many drivers. All of the contained drivers are drivers that need more development before being added to the mainstream kernel.
+
+target - These are drivers for SCSI targets.
+
+tc - These are drivers for TURBOchannel. TURBOchannel is a 32-bit open bus developed by the Digital Equipment Corporation. These buses are commonly used in DECstations.
+
+thermal - The thermal drivers make sure that the CPU stays cool.
+
+tty - The tty drivers manage the connection to a physical terminal.
+
+uio - This driver allows the user to make drivers that run in the user space instead of the kernel space. This keeps the user's driver from causing the kernel to crash.
+
+usb - The USB drivers allow the kernel to use USB ports. Flash drivers and memory cards already contain firmware and a controller, so these drivers allow the kernel to use the USB ports and talk to the USB device.
+
+uwb - The Ultra-WideBand driver manages very low energy level radio devices for short-range, high-bandwidth communications.
+
+vfio - The VFIO driver allows devices to access the userspace.
+
+vhost - This driver is for a virtio server in the host kernel. This is used for virtualization.
+
+video - Video drivers are needed to manage the graphics card and monitor.
+
+virt - These drivers are for virtualization.
+
+virtio - This driver allows virtio devices to be used over a virtual PCI device. This is used for virtualization.
+
+vlynq - This driver controls a proprietary interface developed by Texas Instruments. These are broadband products, like WLAN and modems, VOIP processors, and audio and digital media processor chips.
+
+vme - VMEbus is a bus standard originally developed for the Motorola 68000 line of processors.
+
+w1 - These drivers control one-wire buses.
+
+watchdog - This driver manages the watchdog timer which is a timer that is used to detect and recover from malfunctions.
+
+xen - This driver is for the Xen hypervisor system. A hypervisor is software or hardware that allows users to run multiple operating systems on a single computer. This means that the xen code would allow users to have two or more Linux system running on one computer at the same time. Users could also run Windows, Solaris, FreeBSD, or some other operating system on the Linux system.
+
+zorro - This driver offers support for the Zorro Amiga buses.
+Kernel Tree :
+After the kernel source code is downloaded and uncompressed, users will see many folders and files. It may be a challenge trying to find a particular file. Thankfully, the source code is sorted in a specific way. This enables developers to find any given file or part of the kernel.
+
+The root of the kernel source code contains the folders listed below.
+
+Code:
+arch
+block
+crypto
+Documentation
+drivers
+firmware
+fs
+include
+init
+ipc
+kernel
+lib
+mm
+net
+samples
+scripts
+security
+sound
+tools
+usr
+virt
+
+There are also some files that are located in the root of the source code. They are listed in the table below.
+
+COPYING - Information about licensing and rights. The Linux kernel is licensed under the GPLv2 license. This license grants anyone the right to use, modify, distribute, and share the source code and compiled code for free. However, no one can sell the source code.
+
+CREDITS - List of contributors
+
+Kbuild - This is a script that sets up some settings for making the kernel. For example, this script sets up a ARCH variable where ARCH is the processor type that a developer wants the kernel to support.
+
+Kconfig - This script is used when developer configure the kernel which will be discussed in a later article.
+
+MAINTAINERS - This is a list of the current maintainers, their email addresses, website, and the specific file or part of the kernel that they specialize in developing and fixing. This is useful for when a developer finds a bug in the kernel and they wish to report the bug to the maintainer that can handle the issue.
+
+Makefile - This script is the main file that is used to compile the kernel. This file passes parameters to the compiler as well as the list of files to compile and any other necessary information. 
+
+README - This text file provides information to developers that want to know how to compile the kernel.
+
+REPORTING-BUGS - This text document provides information on reporting bugs.
+
+The coding for the kernel will be in files with the extension ".c", or ".h". The “.c” extension indicates that the kernel is written in C, one of many programming languages. The “.h” files are Header files, and they are also written in C. The header files contain code that many of the “.c” files use. This saves programmers' time because they can use the contained code instead of writing new code. Otherwise, a group of code that performs the same action would be in many or all of the “.c” files. That would also consume and waste hard drive space.
+
+All of the files in the above listed folders are well organized. The folder names help developers to at least have a good guess on the contents of the folders. A directory tree and descriptions are provided below.
+
+arch - This folder contains a Kconfig which sets up some settings for compiling the source code that belongs in this folder. Each supported processor architecture is in the corresponding folder. So, the source code for Alpha processors belong in the alpha folder. Keep in mind that as time goes on, some new processors will be supported, or some may be dropped. For Linux Kernel v3.9.4, these are the folders under arch:
+Code:
+alpha
+arc
+arm
+arm64
+avr32
+blackfin
+c6x
+cris
+frv
+h8300
+hexagon
+ia64
+m32r
+m68k
+metag
+microblaze
+mips
+mn10300
+openrisc
+parisc
+powerpc
+s390
+score
+sh
+sparc
+tile
+um
+unicore32
+x86
+xtensa
+
+block – This folder holds code for block-device drivers. Block devices are devices that accept and send data in blocks. Data blocks are chunks of data instead of a continual stream.
+
+crypto - This folder contains the source code for many encryption algorithms. For example, “sha1_generic.c” is the file that contains the code for the sha1 encryption algorithm.
+
+Documentation - This folder contains plain-text documents that provide information on the kernel and many of the files. If a developer needs information, they may be able to find the needed information in here.
+
+drivers - This directory contains the code for the drivers. A driver is software that controls a piece of hardware. For example, for a computer to understand the keyboard and make it usable, a keyboard driver is needed. Many folders exist in this folder. Each folder is named after each piece or type of hardware. For example, the bluetooth folder holds the code for bluetooth drivers. Other obvious drivers are scsi, usb, and firewire. Some drivers may be more difficult to find. For instance, joystick drivers are not in a joystick folder. Instead, they are under ./drivers/input/joystick. Keyboard and mouse drivers are also located in the input folder. The Macintosh folder contains code for hardware made by Apple. The xen folder contains code for the Xen hypervisor. A hypervisor is software or hardware that allows users to run multiple operating systems on a single computer. This means that the xen code would allow users to have two or more Linux system running on one computer at the same time. Users could also run Windows, Solaris, FreeBSD, or some other operating system on the Linux system. There are many other folders under drivers, but they are too numerous to mention in this article, but they will in a later article.
+
+firmware - The firmware folder contains code that allows the computer to read and understand signals from devices. For illustration, a webcam manages its own hardware, but the computer must understand the signals that the webcam is sending the computer. The Linux system will then use the vicam firmware to understand the webcam. Otherwise, without firmware, the Linux system does not know how to process the information that the webcam is sending. Also, the firmware helps the Linux system to send messages to the device. The Linux system could then tell the webcam to refocus or turnoff.
+
+fs - This is the FileSystem folder. All of the code needed to understand and use filesystems is here. Inside this folder, each filesystem's code is in its own folder. For instance, the ext4 filesystem's code is in the ext4 folder. Within the fs folder, developers will see some files not in folders. These files handle filesystems overall. For example, mount.h would contain code for mounting filesystems. A filesystem is a structured way to store and manage files and directories on a storage device. Each filesystem has its own advantages and disadvantages. These are due to the programming of the filesystem. For illustration, the NTFS filesystem supports transparent compression (when enabled, files are automatically compressed without the user noticing). Most filesystems lack this feature, but they could only possess this ability if it is programmed into the files in the fs folder.
+
+include - The include folder contains miscellaneous header files that the kernel uses. The name for the folder comes from the C command "include" that is used to import a header into C code upon compilation.
+
+init - The init folder has code that deals with the startup of the kernel (INITiation). The main.c file is the core of the kernel. This is the main source code file the connects all of the other files.
+
+ipc - IPC stands for Inter-Process Communication. This folder has the code that handles the communication layer between the kernel and processes. The kernel controls the hardware and programs can only ask the kernel to perform a task. Assume a user has a program that opens the DVD tray. The program does not open the tray directly. Instead, the program informs the kernel that the tray should be opened. Then, the kernel opens the tray by sending a signal to the hardware. This code also manages the kill signals. For illustration, when a system administrator opens a process manager to close a program that has locked-up, the signal to close the program is called a kill signal. The kernel receives the signal and then the kernel (depending on which type of kill signal) will ask the program to stop or the kernel will simply take the process out of the memory and CPU. Pipes used in the command-line are also used by the IPC. The pipes tell the kernel to place the output data on a physical page on in memory. The program or command receiving the data is given a pointer to the page on memory.
+
+kernel - The code in this folder controls the kernel itself. For instance, if a debugger needed to trace an issue, the kernel would use code that originated from source files in this folder to inform the debugger of all of the actions that the kernel performs. There is also code here for keeping track of time. In the kernel folder is a directory titled "power". Some code in this folder provide the abilities for the computer to restart, power-off, and suspend.
+
+lib - the library folder has the code for the kernel's library which is a set of files that that the kernel will need to reference.
+
+mm - The Memory Management folder contains the code for managing the memory. Memory is not randomly placed on the RAM. Instead, the kernel places the data on the RAM carefully. The kernel does not overwrite any memory that is being used or that holds important data.
+
+net - The network folder contains the code for network protocols. This includes code for IPv6 and Appletalk as well as protocols for Ethernet, wifi, bluetooth, etc. Also, the code for handling network bridges and DNS name resolution is in the net directory.
+
+samples - This folder contains programming examples and modules that are being started. Assume a new module with a helpful feature is wanted, but no programmer has announced that they would work on the project. Well, these modules go here. This gives new kernel programmers a chance to help by going through this folder and picking a module they would like to help develop.
+
+scripts - This folder has the scripts needed for compiling the kernel. It is best to not change anything in this folder. Otherwise, you may not be able to configure or make a kernel.
+
+security - This folder has the code for the security of the kernel. It is important to protect the kernel from computer viruses and hackers. Otherwise, the Linux system can be damaged. Kernel security will be discussed in a later article.
+
+sound - This directory has sound driver code for sound/audio cards.
+
+tools - This directory contains tools that interact with the kernel.
+
+usr - Remember the vmlinuz file and similar files mentioned in the previous article? The code in this folder creates those files after the kernel is compiled.
+
+virt - This folder contains code for virtualization which allows users to run multiple operating systems at once. This is different from Xen (mentioned previously). With virtualization, the guest operating system is acting like any other application within the Linux operating system (host system). With a hypervisor like Xen, the two operating systems are managing the hardware together and the same time. In virtualization, the guest OS runs on top of the Linux kernel while in a hypervisor, there is no guest OS and all of the operating systems do not depend on each other.
+
+Tip: Never move a file in the kernel source unless you know what you are doing. Otherwise, the compilation with fail due to a "missing" file.
+
+The Linux kernel folder structure has remained relatively constant. The kernel developers have made some modifications, but overall, this setup is the same throughout all kernel versions. The driver folder's layout also remains about the same
+
 
 
