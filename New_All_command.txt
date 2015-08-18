@@ -740,3 +740,64 @@ firewall scripts - It may not always be necessary to block all users from readin
 Change the ownership to newuser and group to newgroup for all of the files and directories in current directory, and all subdirectories (recursively).
  $ chown -R newuser:newgroup .
 
+Compilation can involve up to four stages: preprocessing, compilation proper, assembly and linking, always in that order.
+The first three stages apply to an individual source file, and end by producing an object file;
+linking combines all the object files (those newly compiled, and those specified as input) into an executable file.
+For any given input file, the file name suffix determines what kind of compilation is done (some of these apply only to TIGCC):
+
+file.c C source code which must be preprocessed. 
+file.s GNU Assembler code. 
+file.S GNU Assembler code which must be preprocessed. 
+file.asm A68k Assembler code. 
+file.o COFF object file to be linked using ld. 
+file.a Static library (function archive) to be linked using ld.
+
+-c  Compile or assemble the source files, but do not link. The linking stage simply is not done. The ultimate output is in the form of an object file for each source file.
+By default, the object file name for a source file is made by replacing the suffix .c, .i, .s, etc., with .o.
+Unrecognized input files, not requiring compilation or assembly, are ignored. 
+
+-S  Stop after the stage of compilation proper; do not assemble. The output is in the form of an assembler code file for each non-assembler input file specified.
+By default, the assembler file name for a source file is made by replacing the suffix .c, .i, etc., with .s.Input files that don't require compilation are ignored. 
+
+-E  Stop after the preprocessing stage; do not run the compiler proper. The output is in the form of preprocessed source code, which is sent to the standard output.
+Input files which don't require preprocessing are ignored. 
+
+-o file
+Place output in file file. This applies regardless to whatever sort of output is being produced, whether it be an executable file, an object file, an assembler file or preprocessed C code.
+Since only one output file can be specified, it does not make sense to use '-o' when compiling more than one input file, unless you are producing an executable file as output.
+If '-o' is not specified, the default is to put an executable file in a.out, the object file for source.suffix in source.o, its assembler file in source.s, and all preprocessed C source on standard output. 
+
+-v  Print (on standard error output) the commands executed to run the stages of compilation. Also print the version number of the compiler driver program and of the preprocessor and the compiler proper. 
+
+-Q  Makes the compiler print out each function name as it is compiled, and print some statistics about each pass when it finishes
+
+-static   On systems that support dynamic linking, this prevents linking with the shared libraries. On other systems, this option has no effect.
+-shared   Produce a shared object which can then be linked with other objects to form an executable. Not all systems support this option. For predictable results, you must also specify the same set of options used for compilation (-fpic, -fPIC, or model suboptions) when you specify this linker option.1 
+    
+gcc [options] [source files] [object files] [-o output file]
+GCC options :
+
+GCC main options:
+option 	description
+gcc -c 	compile source files to object files without linking
+gcc -Dname[=value] 	define a preprocessor macro
+gcc -fPIC 	generate position independent code for shared libraries
+gcc -glevel 	generate debug information to be used by GDB
+gcc -Idir 	add include directory of header files
+gcc -llib 	link with library file
+gcc -Ldir 	look in directory for library files
+gcc -o output file 	write build output to output file
+gcc -Olevel 	optimize for code size and execution time
+gcc -shared 	generate shared object file for shared library
+gcc -Uname 	undefine a preprocessor macro
+gcc -w 	disable all warning messages
+gcc -Wall 	enable all warning messages
+gcc -Wextra 	enable extra warning messages
+gcc -g for gdb debugging
+
+-ar  Create an archive (a static library) instead of a program. The resulting file will have an .a ending. 
+
+
+
+$ gcc  [-o outfile] [source files] [-llibname] [-Ldir] [-Iincludedir] [options]  
+eg  /opt/tooling/bosch/RB_20140425/symphony-ivi-2.6.34/tools/tools/i686-bosch-linux-gnu/bin/i686-bosch-linux-gnu-g++ -o test.out test.cpp -lX11 -L/usr/include/lib -I /usr/Include
