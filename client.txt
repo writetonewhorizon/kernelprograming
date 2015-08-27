@@ -1,0 +1,127 @@
+
+//#include <string.h>
+//#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <signal.h>
+
+
+//#include <sys/select.h>
+//#include <sys/time.h>
+//#include <sys/types.h>
+
+//#ifndef EV_SYN
+//#define EV_SYN 0
+//#endif
+
+//#include <sys/stat.h>
+#include <mqueue.h>
+#include <time.h>
+//#include <sys/time.h>
+//#include <sys/wait.h>
+#include <linux/input.h>
+#include <stdlib.h>
+#include <libudev.h>
+#include <pthread.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+void* fake_gui_thread(void *arg);
+//********************************************************************
+static int key_press;
+
+void*  play_thread(void *arg)
+{
+    system("kill -USR1 $(pidof audio.out)&");
+	sleep(5);
+	key_press = 1;
+	return NULL;
+}
+
+void* stop_thread(void *arg)
+{
+	 system("kill -USR2 $(pidof audio.out)&");
+	 sleep(5);
+	 key_press = 0;
+	 return NULL;
+	 
+}
+int fake_wl_input_event_init()
+{
+	pthread_t thread;
+	pthread_t thread1;
+	pthread_t thread2;
+
+	if (pthread_create(&thread, NULL, fake_gui_thread, NULL)) {
+		errprintf("fake gui thread creation failed!");
+		return -1;
+	}
+	
+	
+	return 0;
+}
+void* fake_gui_thread(void *arg)
+{	
+	mqd_t mqd;
+	struct input_event ev;
+	int ret;
+
+	mqd = message_queue_open();
+	if ((int)mqd < 0)
+	{
+		errprintf("Messgae queue open failed...you might not have started filter \n");
+		exit(-1);
+	}
+
+	while(1) {
+		ret = message_queue_receive(mqd, &ev);
+		if (!ret)
+		{
+			send_event_to_wayland(&ev);
+		}
+	}
+	return NULL;
+}
+void send_event_to_wayland(struct input_event *ev)
+{
+		switch (send_type) {
+		case EV_KEYBOARD_KEY:
+			FakeKeyboardHandleKey(NULL, NULL, ++key_serial, time, send_key, send_value);
+			break;
+		case EV_MOUSE_POSITION:
+			FakePointerHandleMotion(NULL, NULL, time, wl_fixed_from_int(send_x),  wl_fixed_from_int(send_y));
+			break;
+		case EV_MOUSE_KEY:
+			if(key_press == 0)
+			{
+			 	
+				pthread_create(&thread1, NULL, play_thread, NULL); 
+					
+			
+			}
+			else 
+			{
+				
+				pthread_create(&thread2, NULL, stop_thread, NULL); 
+					
+				
+			}
+						//FakePointerHandleButton(NULL, NULL, ++mouse_key_serial, time, send_key, send_value);
+			break;
+		case EV_MOUSE_WHEEL:
+			FakePointerHandleAxis(NULL, NULL, time, 0, wl_fixed_from_int(send_axis_motion));
+			break;
+		default:
+			//errprintf("------ Ignoring sync --------\n");
+			break;
+		}
+				send_type = -1;
+	} else {
+		//errprintf("------ Ignoring event type %d --------\n", ev->type);
+	}	
+#ifdef __cplusplus
+}
+#endif
