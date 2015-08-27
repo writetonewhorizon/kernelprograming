@@ -1,0 +1,48 @@
+#include<stdio.h>
+#include<unistd.h>
+#include<signal.h>
+#include<string.h>
+ 
+static void audio_play_hdl (int sig, siginfo_t *siginfo, void *context)
+{
+	printf ("Play the song Sending PID: %ld, UID: %ld\n",
+			(long)siginfo->si_pid, (long)siginfo->si_uid);
+	system("aplay /home/root/songs/behti_hawa.wav");
+}
+
+
+static void audio_stop_hdl (int sig, siginfo_t *siginfo, void *context)
+{
+	printf ("Stop the song Sending PID: %ld, UID: %ld\n",
+			(long)siginfo->si_pid, (long)siginfo->si_uid);
+	system("killall aplay");
+}
+
+
+main()
+{
+	struct sigaction act;
+ 
+	memset (&act, '\0', sizeof(act));
+ 
+	act.sa_sigaction = &audio_play_hdl;
+ 	act.sa_flags = SA_SIGINFO;
+ 
+	if (sigaction(SIGUSR1, &act, NULL) < 0) {
+		perror ("sigaction");
+		return 1;
+	}
+	act.sa_sigaction = &audio_stop_hdl;
+	act.sa_flags = SA_SIGINFO;
+        if (sigaction(SIGUSR2, &act, NULL) < 0) {
+		perror ("sigaction");
+		return 1;
+	}
+ 	
+ 
+	while (1)
+		sleep (10);
+ 
+	return 0;
+
+}
