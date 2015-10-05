@@ -902,4 +902,39 @@ Linux Kernel Debugging Training Course Outline :
    Insert bug(s)
    make system hang
    Crash and Analyze 
-    
+
+kernel compilation :
+#!/bin/sh
+ARCH="x86"
+CROSS_COMPILE="/opt/tooling/codesourcery/MGC-2014.05-45-i686-gcc-4.8.3/Sourcery_CodeBench_for_IA32_GNU_Linux/bin/i686-pc-linux-gnu-"
+
+MODULES_INSTALL_PATH="/home/<userid>/Desktop/kernel_modules_lsim"
+
+PROC_CORE=`nproc`
+NUM_PARALLEL_JOB=8
+if [ ! -z $PROC_CORE ] ; then
+	echo "CPU cores : $PROC_CORE"
+	NUM_PARALLEL_JOB=$(( $PROC_CORE * 2 ))
+else
+	echo "Cannot find the number of core..."
+fi
+
+echo "Compiling kernel..."
+#All configure file will be under linux-2.6-imx/arch/x86/configs/.
+make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE x86_platform_production_defconfig
+#make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE menuconfig
+#menuconfig is to add or delete some kernel support to the existing .config file.
+
+#make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE LOADADDR=0x12000000 uImage [zImage]
+#image will be created to this dir. arch/arm/boot/uImage.
+make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE modules
+#make -j${NUM_PARALLEL_JOB} ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE dtbs
+echo "Installing modules..."
+make modules_install ARCH=$ARCH CROSS_COMPILE=$CROSS_COMPILE INSTALL_MOD_PATH=$MODULES_INSTALL_PATH > /dev/mod_path
+#By default installed modules dir is INSTALL_MOD_PATH =/lib/modules/[kernel version + CONFIG_LOCALVERSION]/
+
+#gcc -Idir [options] [source files] [object files] [-o output file]
+#-I-> include headres path
+#-L-> include library path
+#-g-> include gdb debugging symboles
+#gcc -lpthread -I/home/dus5cob/samba/ccstg/dus5cob_AI_PRJ_SUZUKI_LINUX_15.0F25.vws/ai_osal_linux/components/inc/ /home/dus5cob/samba/ccstg/dus5cob_AI_PRJ_SUZUKI_LINUX_15.0F25.vws/ai_osal_linux/components/inc/dgram_service.c sim_adc.c -o sim_adc.test
