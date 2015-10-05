@@ -1107,3 +1107,236 @@ GPIO device driver to the kernel, it will be responsible for doing the following
 ? Register character device to the kernel
 ? Create device nodes to expose GPIO resources to userspace
 ? Get current timestamp used for contact debouncing
+
+
+Embedded Concepts, Linux Programming, Kernel and Code Porting to ARM, Char, Block, Network Device Drivers, USB drivers, Hands on with FriendlyARM and BeagleBone Kits
+
+Linux Basics
+
+•	Introduction to UNIX, Linux and GNU
+•	Linux Introduction
+•	Linux Commands and Shell Programming
+•	Entering commands and creating variables
+•	Important Linux Commands
+•	Shell Basics, Script Basics
+•	Working with file, directories and file attributes
+•	Process, Variables, Substitutions
+•	Flow Control – if, case statements
+•	Loops – while, for loops and Parameters
+•	Input/Output, Functions, Text Filtering
+•	Signals, Pipes
+•	Project Development in Shell Programming
+
+ 
+
+ 
+
+Linux System Programming
+
+•	Programming Linux in C
+•	Linux Programs, GNU gcc compiler and tool chain
+•	Applications, Header Files, Library Files, Static, Shared Libraries
+•	Working with files,Linux File Structure
+•	Low level file access – write, read, open
+•	Standard I/O library, Formatted input/Output
+•	Scanning directories- opendir, readir, seekdir,closedir
+•	Linux Environemnt
+•	Program arguments, Environment variables,Time,Date, Temporary files, Logging
+•	Data management – managing memory, allocating and freeing memory, File locking
+•	Databases – dbm database, dbm access functions
+•	make command and Makefiles
+•	Process and Signals
+•	POSIX Threads
+•	Semaphores, Shared Memory and Message Queues
+•	Sockets Programming
+
+
+Linux Kernel Module Programming
+
+•	Introduction to the Linux kernel
+•	Kernel source code
+•	Configuring, compiling and booting the kernel
+•	Linux kernel modules
+•	Memory management and accessing hardware
+•	Processes, scheduling, waiting for resources and interrupt management
+•	Kernel debugging techniques
+•	Lookaside Caches, Vmalloc,Lookaside Caches
+•	I/O Ports and I/O Memory introduction
+•	Using I/O Ports and I/O Memory
+•	Using Digital I/O Ports
+•	Loading modules on Demand
+•	The /proc File System
+•	Talking To Device Files
+•	Blocking Processes
+•	Replacing Printks
+•	Interrupt Handling
+
+ 
+
+Linux Device Drivers
+
+•	Linux driver architecture
+•	Classes of Devices and Modules
+•	Char Drivers
+•	Design a template
+•	Major and Minor Numbers
+•	Dynamic allocation of major numbers
+•	File Operations, Block Drivers
+•	Registering the Driver
+•	Header File blk.h
+•	Handling Requests - The Request Queue
+•	Performing Actual Data Transfer
+•	Removable Devices - check_media_change, Revalidation
+•	Partitionable Devices - Partition Detection, Partition Detection Using initrd
+•	Interrupt Driven Block Drivers
+•	Network Drivers
+•	net_device Structure - Visible Head, Hidden Fields
+•	Socket Buffers
+•	USB basics, Linux USB bus stack
+•	USB driver classes
+•	Interacting with USB devices from drivers
+•	Driver hands-on
+
+
+Embedded Linux
+
+•	Introduction to embedded Linux
+•	Embedded Linux system architecture
+•	Cross-compiler tool-chains
+•	Different tool-chains build procedures
+•	Using pre-build cross tool-chain
+•	Machine emulator and virtualizer
+•	Using QEMU emulator for ARM
+•	Supported hardware architectures
+•	Using predefined config files
+•	Cross-compiling the kernel for target
+•	Understanding NAND/NOR flash
+•	File system for flash
+•	U-boot
+•	Building U-boot for target
+•	Booting target with U-boot
+•	Transferring images to target using U-boot
+•	Flashing kernel image and File System
+•	Working on FriendlyARM and BeagleBone Boards
+
+ 
+
+Kit,Parts provided during training
+
+•	FriendlyARM mini2440 board,RaspberryPi board, Ethernet cable, USB cable, SDCard, 12 Inch Graphic LCD,Touch Panel, Fedora, Ubuntu Distro, Linux Toolchains
+
+ 
+
+
+
+
+
+
+
+The linux kernel internels and debugging
+01: Introduction 
+02: Preliminaries 
+03: Kernel Architecture I 
+04: Kernel Programming Preview 
+05: Modules 
+06: Kernel Architecture II 
+07: Kernel Initialization 
+08: Kernel Configuration and Compilation 
+09: System Calls 
+10: Kernel Style and General Considerations 
+11: Race Conditions and Synchronization Methods 
+12: SMP and Threads 
+13: Processes 
+14: Process Limits and Capabilities ** 
+15: Monitoring and Debugging 
+16: The proc Filesystem ** 
+17: kprobes 
+18: Ftrace 
+19: Perf 
+20: Crash 
+21: Kernel Core Dumps 
+22: Scheduling Basics 
+23: Completely Fair Scheduler (CFS) 
+24: Timing Measurements 
+25: Kernel Timers 
+26: Memory Addressing 
+27: Huge Pages 
+28: Memory Allocation 
+29: Process Address Space 
+30: Disk Caches and Swapping 
+31: Device Drivers** 
+32: Signals 
+33: Notifiers** 
+34: CPU Frequency Scaling** 
+35: Embedded Linux** 
+36: Virtualization** 
+Devloping linux device driver
+1.	Introduction
+2.	Preliminaries
+3.	Device Drivers
+4.	Modules I: Basics
+5.	Character Devices
+6.	Kernel Features
+7.	Interrupts and Exceptions
+8.	Modules II: Exporting, Licensing and Dynamic Loading
+9.	Debugging Techniques
+10.	Timing and Timers
+11.	Race Conditions and Synchronization Methods
+12.	ioctls
+13.	Unified Device Model and sysfs
+14.	Firmware
+15.	Memory Management and Allocation
+16.	Transferring Between User and Kernel Space
+17.	Sleeping and Wait Queues
+18.	Interrupt Handling: Deferrable Functions and User Drivers
+19.	Hardware I/O
+20.	PCI
+21.	Platform Drivers**
+22.	Device Trees**
+23.	Direct Memory Access (DMA)
+24.	Network Drivers I: Basics
+25.	Network Drivers II: Data Structures
+26.	Network Drivers III: Transmission and Reception
+27.	Network Drivers IV: Selected Topics
+28.	USB Drivers
+29.	Memory Technology Devices**
+30.	Power Management
+31.	The Virtual File System
+32.	I/O Scheduling
+33.	Block Drivers
+34.	Filesystems in User-Space (FUSE)**
+35.	Journalling Filesystems**
+
+
+
+
+
+
+
+
+Embedded linux development 
+1.	Introduction
+2.	Embedded and Real-Time Systems Concepts
+3.	Cross-Development Environments: Goals and Needs
+4.	Cross-Development: Auto-Build Tools
+5.	Setting Up a Target Development Board
+6.	Boot loaders and U-Boot
+7.	Kernel Architecture Preview
+8.	Kernel Source Tree Overview
+9.	Kernel Programming Preview
+10.	KBuild System
+11.	Kernel Configuration, Compilation, Booting
+12.	Modules
+13.	Device Drivers**
+14.	Device Trees**
+15.	Target Filesystem Packaging
+16.	Build Target Root Filesystem
+17.	Root Filesystem Choices
+18.	Configuring uClibc
+19.	Build BusyBox Utility Suite
+20.	Linker Scripts
+21.	Kernel Monitoring and Debugging
+22.	Right-Sizing
+23.	Flash Memory Filesystems
+24.	Compressed Filesystems
+25.	Real-Time Extensions
