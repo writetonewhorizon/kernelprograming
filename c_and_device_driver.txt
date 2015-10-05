@@ -1,0 +1,905 @@
+The C Language outlines :
+ C Program Compilation
+ Execution Process
+ Tokens of C Program
+ C Instructions
+ Constants, Variables
+ Identifiers and Keywords
+ Primitive Data Types
+ Structures – The Definition
+ Structures – Declaration & Type
+ Accessing Elements of Structure
+ Range of Signed/Unsigned Data-types
+ Efficient way of Printing Pointer
+ Compiler Memory Allocation for Data-types
+ Compiler Memory Allocation for Structures
+ Data-type Alignments
+ Compiler Memory Allocation for Unions
+ Union – Data Corruption
+ Practical Usage of Unions
+ Practical Usage of Bitfields
+ Bitfields Overflow
+ Printing every byte of an Integer
+ Enumeration
+ Typedef Statements
+ Practical example of Typedef Usage
+ typedef’ing a Function Pointer
+ Bit-Fields in Structure
+Practical examples of Bitfield Usage
+Structure Padding & Pitfalls
+Programming Model & Memory Sizes
+ Why Sizeof Int and Long is 4 or 8?
+ Use of long long in 32-bit Architecture
+Practical Example of long long
+IA-32, IA-64, ILP-32, LP64, x86-64
+ Array – Representation
+ Array – Memory Allocation
+ Array – Declaration & Initialization
+ Two Dimensional Arrays
+
+Pointers
+ Accessing a Variable Through Pointer
+ Pointer – Memory Allocation
+ Pointer – Declaration & Initialization
+ Pointer – Dereferencing
+ Pointers & Arrays
+ Character Arrays using Pointers
+ Array of Character Pointers
+ Memory Diagram – Array of Char Pointers
+ Arrays as Pointers – a[i] == i[a]?
+Constant Pointers
+ Pointer Arithmetic
+ String Handling Functions
+ String Conversion Functions
+ Efficient usage of sscanf()/sprintf()
+
+Computing Basic
+ Binary & Octal Systems
+ Decimal & Hexadecimal Systems
+Signed Representations in Memory
+ Binary Shifts – Right & Left
+ Sign Bits and Bit-Shift Operations
+ Right Shift – Logical Vs Arithmetic Shift
+ Bit-Shift Overflow
+ ASCII Representations
+ Endian-ness – Little Vs Big
+ Endian-ness – Portability Issues
+Operators
+ Bitwise Operations
+ Logical Operators – Short Circuit
+ Bitwise Vs Logical Operations
+ sizeof() operator
+ Pitfalls/Issues with sizeof() usage
+ Pointer Increment & Scaling
+ Operator Precedence
+ Operator Associativity
+ True meaning of Associativity
+ Examples of Precedence & Associativity
+ Ternary Operator Associativity Rule
+Data-type Conversion Rules
+ Float to Int to Float Conversions
+ Variadic functions & default promotion rules
+ Printf Idiosynchracies
+ Pointer Format Specifiers
+ Signed Vs Unsigned – Pitfalls
+Evaluation of i = ++i + ++i
+ Evaluation of i = ++i + ++i + ++i
+Concept of Sequence Points
+ Example of Sequence Points
+
+Storage Classes
+ Storage Class Specifiers
+ Scope of a Variable
+ Register, Auto, Static, Extern
+ Why Register Class and Practical Examples
+ Automatic Variables and Stack
+ Static Variables and Functions
+ True meaning of Extern
+ How to Use extern across Multiple Files with Examples
+ Best Practices for Extern Usage
+ Local/Block/Global Scope
+ Nesting of Scope
+ Lifetime of a Variable
+ Linkage of a Variable
+ What is Const?
+Practical Examples of Const Qualifier
+ Usage of Constant in library functions (libc)
+ What is Volatile?
+Practical Examples of Volatile Qualifier
+ Const Volatile Together?
+ Register Vs Volatile Performance?
+Practical Examples of Const Volatile
+ Pointer Aliasing
+ What is Restrict Qualifier?
+ Restrict Keyword and Compiler Optimization
+Examples of Restrict Qualifier 
+ 
+Memory
+ Dynamic Memory Allocations
+ malloc, calloc, realloc, free
+ malloc Vs calloc
+ Heap Memory
+ Stack Memory – Pitfalls
+ Dangling Pointers
+ DMA – Errors
+ Best Practices for malloc() & free()
+ DMA – Unspecified Behaviour
+
+Functions & Pointers
+ Invoking Functions
+ Passing Arguments to Functions
+ Call by Value & Reference
+ Is C call by Value?
+ Is C call by Reference?
+ Array as Function Argument
+ Rules for Array Argument Passing
+ Multi-dimensional Array Argument Passing
+ Structure as Function Argument
+ Static Vs Dynamic Runtime Environment
+ Function Call and Runtime Stack
+ Rules for Evaluation of Function Arguments
+Memory Organization
+ Code Segment
+ Data Segment
+ Heap Segment
+ Stack Segment
+ free space
+ register space
+ Stack Frames
+ Calling Sequence
+ View of Runtime Stack with Example
+ Access to Local Variable in Stack
+ Local Temporaries
+ Function Pointers
+ Declaration and Usage of Function Pointers
+ Function Pointers as Function Parameters
+ Practical Example of Function Pointers
+ Pointer to an Integer Array
+C Pointers Complexity Chart
+ int **p
+ int (*p)()
+ int (*p)[]
+ int *p()
+ int *(*p[])()
+ int *(**p)[]
+
+Preprocessor
+ Preprocessor – #include statements
+ Multiple Inclusion of a Header File?
+ Preprocessor – #define statements
+ Preprocessor – Conditional Compilation
+ Preprocessor – Nested Macros
+ Preprocessor – Multiline Macros
+ Preprocessor – Stringizer
+ Preprocessor – Token Concatenation
+ Preprocessor – Useful Directives
+ Conditional Directives for Debugging
+ Where Macros are Heavily Used
+ Practical Examples of Macros
+ Macros Pitfalls
+ Macros Vs Enums
+ Inline Functions
+ Macros Vs Inline
+ Inline Recursive Functions
+
+Command Line Argument
+ Environment Variables in C Programs
+ Recursion Example
+ Recursion Vs Iteration
+ Code/Space/Time Complexity
+
+Standard I/O Library
+ Files & Streams
+ Streams Buffers
+ IO Buffers – Line Vs Full Vs No-Buffers
+ Setting & Flushing Buffers
+ File Access
+ File Access Modes
+ Sequential Vs Random Access
+ Concept of File Offsets
+ File Operation Errors
+ End-of-File Condition?
+ Return Values and Error Values
+ Character Based File I/O
+ Line Based File I/O
+ Formatted File I/O
+ Block File I/O
+ Dangerous – gets() Vs fgets()
+ File Random Access Methods 
+ 
+Linux / Unix System Programming Training Course Outline
+
+    Introduction to Unix
+    Linux Layered Architecture
+    Bootup Sequence
+    File Tree & Types
+    File Systems
+    Super Block & Inode
+    System Vs Function Calls
+    System Call Sequence
+    File descriptor table
+
+    File Management
+    File related System Calls
+    File Control Operations
+    File Locking
+    fcntl() calls
+
+    Process Management
+    Mode of Execution
+    Address Space
+    Context Switching
+    Process Structure & States
+    Scheduling & Priority
+    Process Creation & Exec
+    fork()/exec() calls
+
+    Memory Management
+    Virtual Memory
+    Paging & Swapping
+    Memory Mapping
+    Demand Paging
+
+    Signals Vs. Interrupts
+    Signals in Unix
+    Receiving a Signal
+    Handling a Signal
+    Signal System Calls
+
+    User Vs Daemon Process
+    Characteristics of a Daemon
+    Writing a Daemon
+    Timers & Resource Limits
+    Interval Timers
+    High Resolution Timers
+    System calls for Timers
+    Resource Limits
+    Hard Limit / Soft Limit 
+
+	
+
+    Why IPCs
+    Type of IPC Mechanisms
+    Primitive IPCs
+    Pipes & FIFOs
+    Full Duplex Pipes
+    Persistence of Pipes & FIFOs
+    Pros and Cons of Pipes/FIFOs
+    Limitation of Pipes/FIFOs
+
+    System V IPCs
+    IPC Attributes
+    IPC Persistence
+    Kernel Limits for these IPCs
+
+    Shared Memory
+    Shared Memory System Calls
+    Pros and Cons of Shared Memory
+
+    Message Queues
+    Message Queue System Calls
+    Pros and Cons of Message Queues
+
+    Semaphores
+    Classical P() & V() Operations
+    Binary & Counting Semaphores
+    Semaphore System Calls
+    Pros and Cons of Semaphores
+
+    IPC Control Operations
+    IPC Remova
+Outline of Linux Internals and Debugging Training for System Administrator :
+   Linux Kernel Introduction
+   Linux System
+   Linux Organization
+   Linux Version
+   Basic OS Concept
+   Linux Filesystem
+   File Types
+   Processes & File Objects
+   File Object Access
+   The Process/Kernel Model
+   Re-entrant Kernel
+   Interleaved Kernel Control Paths
+   Preemptive Kernel
+   Preemptive Context Switch
+   Synchronization
+   Deadlock
+   Memory Management
+
+   Memory Addressing
+   Logical, Linear & Physical Addresses
+   Translating a Logical Address
+   Segmentation in Linux
+   Paging in Linux
+   Large Pages
+   Physical Page Extension(PAE)
+   Hardware Cache
+   Cache Coherency
+   Translation Lookaside Buffers (TLBs)
+   Linux 4 Table Paging Model
+   Physical Memory Layout
+   Kernel Physical Memory Variables
+   Process Page Tables
+   Kernel Page Tables
+   TLB Management
+
+   Processes in Linux Kernel
+   Process
+   Lightweight Process
+   Threads & Thread Groups
+   Process Descriptions
+   The task_struct
+   Linux Process States
+   Thread Group Leader
+   The Process List
+   Waiting Processes
+   Wait Queues
+   Awakening Processes
+   Process Creation
+   Kernel Threads
+   process 0 & Process 1
+   Destroying Processes
+   Process Removal
+
+   Process Scheduling
+   Process Preemption
+   Quantum Duration
+   Scheduling Policies
+   Scheduling of Conventional Processes
+   Dynamic Priority
+   Realtime Processes
+   Realtime Process Scheduling
+   Runqueue Balancing in Multiprocessing Systems
+   Scheduling Domains
+   Load Balancing
+   CPU Binding
+
+   Signals in Linux
+   Signal Related System Calls
+   Signal Generation and Delivery
+   Pending Signals
+   Action Performed Upon Delivery
+   Signals @ Multithreaded Application
+   Delivering the Signal
+   Catching the Signal
+   Restarting System Calls
+	Process Focus
+   Viewing Processes
+   Process Tree & Process Status
+   Identifying System & Daemon Processes
+   Foreground and Background Processes
+   Tuning Process Scheduling
+   Process Priority
+   nice & renice commands
+   Killing / Terminating a Processes
+   Max Processes per User – ulimit
+   Per Process Resource Limits
+   Stack Sizes
+   Core File Limits
+   IPCs Consumption and Limits
+
+   Process Internals
+   Anatomy of a Process
+   Process Map in Linux
+   Memory Layout
+   Code Segment
+   Data Segment
+   Stack Segment
+   Heap Segment
+   Decoding Process Map Lab
+
+   System Focus
+   Performance Monitoring & Troubleshooting
+   System Status – Resource Consumption
+   System Status – Memory Usage
+   System Status – I/O Activity
+   System Status – CPU Usage
+   Resource Usage – Trends
+   top, iostat, vmstat, sar commands
+   Sample Programs to Consume CPU and Memory
+   Memory Eater Lab
+   CPU Loader Lab
+   OOM Killer
+   VM Overcommit Ratios
+
+   Troubleshooting Methods
+   Process Syscall Tracing – strace
+   Process Libcall Tracing – ltrace
+   Process Kernel/User Space Time Check
+   Profiling Data using System & Library Traces
+
+   GDB Debugging
+   GDB Deep Dive Lab
+   Debugging a Live Process
+   Starting a Program with GDB
+   Debugging a Memory/Core Dump
+   Stack Traces
+   Common Failures
+   Failure Notifications
+   Common Faults
+   Segmentation Violation
+   Stack Overflow
+   Heap Overflow
+
+   Linux Kernel Crash Dump Analysis
+   Crash Dump Process
+   How kexec / kdump Works
+   Settinp up Kexec/Kdump
+   crashkernel parameter
+   Set up, Testing and Running Crash
+   Crash Analysis 
+   Advanced C Training Course Outline
+Training on Linux & C Debugging Techniques :
+    C program to Process
+    Compilation Steps
+    Preprocessor
+    Compiler
+    Assembler
+    Linker / Loader
+    GCC options
+    Fixing Warnings in the Code
+    Include Files
+    Libraries
+    Static Vs Dynamic Library
+    Static Library Generation
+    Dynamic Library Generation
+    Linking with Libraries
+    File Formats
+    ELF Format
+    Symbol Tables
+    Anatomy of a Process
+    Process Map
+    Memory Layout
+    Code Segment
+    Data Segment
+    Stack Segment
+    Heap Segment
+    Object Dump
+    Stack Frames
+    Mapping Assembly to C
+    Managing Heap
+    Pmap / Pstack
+    Strace
+    Debugging Tools
+    GDB Debugger
+    Debugging Running Process
+    Core dump analysis
+    Symbols & Optimizations
+    Default Optimization Levels
+    Common Failures
+    Failure Notifications
+    Common Faults
+    Segmentation Violation
+    Stack Overflow
+    Heap Overflow
+    Arithmetic Overflow
+    Illegal code execution
+    Stack Issue
+    Endian-ness issue
+    C library assertion
+    Data Type mismatch
+Linux Multithreaded Architecture and Programming :
+    Introduction to Threads
+    Parallelism
+    Multi-cores
+    Introduction to Thread
+    Threads – Application
+    User Level Threads (ULT)
+    Advantage of ULT
+    Disadvantage of ULT
+    Kernel Level Threads (KLT)
+    Advantage of KLT
+    Disadvantage of KLT
+    Threads Vs Processes
+    Process Memory Layout
+    Child Process Memory
+    Threads Inside Processes
+    Thread Memory Layout
+
+    Thread Programming – I
+    Introduction to Pthreads (POSIX Threads)
+    Thread Creation
+    Thread Termination
+    Thread Id & Attributes
+    Thread Joining & Detaching
+    Thread Priorities
+    Thread Cancellations
+    Thread Cleanup Handling
+    Passing Info to Threads
+
+    Thread Programming – II
+    Thread Synchronizations
+    Mutual Exclusions
+    Condition Variables
+    Thread Safe Operations
+    Thread Signal Handling
+    Thread Signal Masking
+    Issues @ Threads
+    Races & Deadlocks
+    Threads  & Process Resources
+    Threads – File Handling
+    Threads – IPC Handling
+
+Linux Kernel Internals Training Course Outline :
+Linux Kernel Introduction
+Linux System
+Linux Organization
+Linux Version
+Basic OS Concept
+Linux N+1 System
+Linux Filesystem
+File Types
+Processes & File Objects
+File Object Access
+The Process/Kernel Model
+Re-entrant Kernel
+Interleaved Kernel Control Paths
+Preemptive Kernel
+Preemptive Context Switch
+Synchronization
+Deadlock
+Memory Management 	
+Getting Started with Kernel :
+Obtaining the Kernel Source
+Installing the Kernel Source
+Using Patches
+The Kernel Source Tree
+Building the Kernel
+Configuring the Kernel
+Efficient Kernel Building
+Spawning Multiple Build Jobs
+Installing the New Kernel
+Understanding Kernel Programming
+C Library or Standard Headers?
+GNU C Extensions
+Inline Functions
+Inline Assembly
+Branch Annotation
+Memory Protection?
+Floating Point?
+Stack Sizes
+Memory Addressing :
+Logical, Linear & Physical Addresses
+Translating a Logical Address
+Segmentation in Linux
+Paging in Linux
+Large Pages
+Physical Page Extension(PAE)
+Hardware Cache
+Cache Coherency
+Translation Lookaside Buffers (TLBs)
+Linux 4 Table Paging Model
+Physical Memory Layout
+Kernel Physical Memory Variables
+Process Page Tables
+Kernel Page Tables
+TLB Management 	
+Processes in Linux Kernel :
+Process
+Lightweight Process
+Threads & Thread Groups
+Process Descriptions
+The task_struct
+Linux Process States
+Thread Group Leader
+thread_info Structure
+Kernel Stack Structure
+The Process List
+Waiting Processes
+Wait Queues
+Awakening Processes
+Process Creation
+clone() / fork() / vfork()
+Kernel Threads
+Process 0 & Process 1
+Destroying Processes
+exit_group() / _exit()
+Process Removal
+Kernel Synchronization :
+Kernel Preemption
+When Synchronization is Necessary
+Interleaved Kernel Control Paths
+When Synchronization is Not Necessary
+Synchronization Constraints
+Synchronization Primitives
+Per-CPU Variables
+Atomic Operations
+Optimization & Memory Barriers
+Spin Locks
+Read/Write Spin Locks
+Seqlocks
+Read-Copy Update (RCU) Locks
+Semaphores
+Read/Write Semaphores
+Local Interrupt Disabling
+Disabling Deferrable Functions 	
+Timing Measurements in Linux :
+Clocks and Timer Circuits
+Linux Timekeeping Architecture
+The jiffies Variable
+Updating System Statistics
+Software Timers
+Dynamic Timer List Structure
+Timer List Data-Structure
+Per-CPU Timer List
+Delay Functions
+udelay() and ndelay()
+System Calls for POSIX Timers and Clocks
+Process Scheduling :
+Process Preemption
+Quantum Duration
+Scheduling Policies
+Scheduling of Conventional Processes
+Dynamic Priority
+Realtime Processes
+Realtime Process Scheduling
+Runqueue Data Structure
+Runqueue Balancing in Multiprocessing Systems
+Scheduling Domains
+Load Balancing
+CPU Binding 	
+Memory Management :
+Page Frame / Page
+Memory Zones
+Reserved Page Frames
+High Memory Page Frames
+Temporary Kernel Mappings
+Dynamic Contigous Page Allocation
+Slab Allocator
+Object Caches
+Slab Cache Allocation
+Object Allocation
+General Purpose Allocation – kmalloc()
+Non-contigous Memory Area Management
+Process Address Space :
+Kernel Address Space
+Process Address Space
+System Calls for Memory Region
+brk(), execve(), _exit(), fork()
+mmap(), mmap2(), munmap(),
+shmat(), shmdt()
+Page Faults
+Valid & Invalid Addresses
+The Memory Descriptor
+The mem_struct Structure
+Memory Regions
+Linear Address Intervals – do_mmap()
+Page Fault Exception Handling
+Demand Paging
+Copy on Write (COW)
+Creating Process Address Space
+Managing Heap Space 	
+System Calls :
+System Call Handler
+Service Routines
+Invoking a System Call
+Leaving a System Call
+Arguments to System Call
+Arguments in Registers
+Verifying the Arguments
+Accessing Process Address Space
+Exception Tables
+Fixing Address Exceptions
+Kernel Wrapper Routines
+Signals in Linux :
+Signal Related System Calls
+Signal Generation and Delivery
+Pending Signals
+Action Performed Upon Delivery
+Signals @ Multithreaded Application
+Data Structures for Signal Handling
+Delivering the Signal
+Catching the Signal
+Restarting System Calls 	
+Linux Page Cache :
+Page Cache Contents
+Page Cache Requirements
+The address_space Object
+Block Buffers and Page Cache
+The Buffer Head
+Buffer Pages
+Writing Dirty Pages to Disk
+bdflush & pdflush
+sync(), fsync() and fdatasync() calls
+Page Frame Reclamation
+Page Frame Reclaiming Algorithm
+Unreclaimable pages
+Swappable Pages
+Syncable Pages
+Discardable Pages
+Design of the Algorithm
+Reclaimation Tigger Points
+Low on Memory
+Periodic Reclaiming
+The Out-of-memory Killer
+Swapping Features 	
+Linux Virtual Filesystem :
+VFS Role in File Operations
+VFS Supported Filesystem Classes
+Common File Model
+Process & VFS Object Interaction
+VFS Data Structures
+Super Block Object
+Inode Object
+File Object
+Dentry Object
+Processes and Files
+The fd array
+Constraints on a Process
+File System Types
+Filesystem Type Registration
+Filesystem Handling
+Mounting a Filesystem
+Pathname Lookup
+Reads & Writes
+Other File Operations 
+
+linux device driver outline :
+    What is Kernel
+    Linux System Architecture
+    Linux Software Architecture
+    Basic Kernel Services
+    Linux Kernel Code
+    What is a Device Driver
+    Classes of Devices
+    Device Driver Classification
+    Concept of a Module
+    Fundamental Concepts
+    Kernel Module Vs Application
+    Namespace
+    Major & Minor Numbers
+    Reserved Major Numbers
+    Module Parameters
+    Loading/Unloading Modules
+    Current Process Information
+    Kernel Memory Allocations
+    Driver Entry Points
+    Driver Switch Tables
+    Module Init & Exit
+    Device Registration
+    Character Device Drivers
+    File Structure
+    File Operations Structure
+    Driver-User Data Transfer
+    Driver-Kernel Communication
+    Driver-Device Communication
+    Device File Creation
+    Device File Control Operations
+    Ioctl command numbers
+    Capabilities & Restricted Operations
+    Driver Usage Count
+    Kernel Synchronization Mechanisms
+    Introduction to Race Conditions
+    Sources of Race Conditions
+    Preemption – User & Kernel
+    Preemption APIs
+    Interrupt Handling APIs
+    Semaphores
+    Binary & Counting Semaphores
+    Reader Writer Semaphores
+    Semaphore APIs
+    Mutexes
+    Spinlocks
+    Spinlock APIs
+    Atomic Operations
+    Seqlocks
+    Seqlock APIs
+    Completions
+    Deadlock – Sources
+    Deadlock Prevention
+    Waitqueues
+    Rules for Sleeping
+    Waitqueue APIs
+    Linux Kernel Tree
+    Linux Source Code
+    Linux Kernel Configuration
+Linux Video Device Drivers:
+   Display Architecture
+   Linux-Video Subsystem
+   Display Parameters
+   The Frame Buffer API
+   Frame Buffer Drivers
+   Console Drivers
+   Debugging Aspects
+Linux Audio Device Drivers:
+   Audio Architecture
+   Linux-Sound Subsystem
+   Device Example
+   Debugging Aspects
+   Writing a sample Audio Device Driver   
+Linux I2C Device Drivers :  
+   What’s I2C/SMBus?
+   I2C Core
+   Bus Transactions
+   Device Examples
+   I2C-dev
+   Debugging Aspects
+   Writing a sample I2C Device Driver
+Linux SPI driver :
+   What’s SPI bus?
+   SPI Core
+   Bus Transactions
+   Device Examples
+   SPI-dev
+   Debugging Aspects
+   Writing a sample SPI Device Driver
+Linux USB Device Drivers    
+    USB Architecture
+    Linux-USB Subsystem
+    Driver Data Structures
+    Enumeration
+    USB Device Example
+    Class Drivers
+    Debugging Aspects
+    Writing a sample USB Device Driver
+Linux Network Device Drivers : 
+   Networking Driver Data Structures
+   Communicating with Protocol Layers
+   Buffer Management and Concurrency Control
+   Network Device Example
+   Network Throughput
+   Debugging Aspects
+   Writing a sample Network Device Drive
+Linux Block Device Drivers :
+    Storage Technologies
+    Linux Block I/O Layer
+    I/O Schedulers
+    Block Driver Data Structures and Methods
+    Block/Storage Device Example
+    Advanced Topics
+    Debugging
+    Writing a sample Block Device Driver
+Linux PCI Device Drivers : 
+    The PCI Family
+    Addressing and Identification
+    Accessing PCI Regions
+    Direct Memory Access
+    PCI Device Example
+    Debugging Aspects
+    Writing a sample PCI Device Driver
+Linux Kernel Debugging Training Course Outline :
+   Intro to Kernel Debugging
+   Kernel OOPS
+   Kernel Hang
+
+   Kernel Helpers for Debugging :
+   Ksysmoops
+   System.map
+   /proc/kallsyms
+   /proc/kcore
+   Objdump – s vmlinux
+   /var/log/messages
+   Syslogd
+   Magic SysRq
+
+   Kernel Debuggers :
+   gdb analysis of Live Kernel
+   Limitations of gdb analysis
+   kdb analysis of Live Kernel
+   Limitations of kdb analysis
+   kgdb analysis of Live Kernel
+   Setting up kdb and kgdb
+   kexec / kdump
+   LKCD
+
+   Linux Kernel Crash Dump Analysis :
+   Crash Dump Process
+   How kexec / kdump Works
+   Settinp up Kexec/Kdump
+   crashkernel parameter
+   Set up, Testing and Running Crash
+   Crash Analysis
+
+   Hands-on Lab :
+   Configuring the Kernel for Debugging
+   Kernel Parameters for KDB and KGDB
+   Building Kernel for Debugging
+   Turning on Magic Sysrq Keys
+   Debugging a Live Kernel using gdb, kdb and kgdb
+   Printing Kernel Global Variables and Code
+   Loading a Debug Module using kdb and kgdb
+   Insert bug(s)
+   make system hang
+   Crash and Analyze 
+    
