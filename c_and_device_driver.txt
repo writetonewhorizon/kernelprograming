@@ -1340,3 +1340,98 @@ Embedded linux development
 23.	Flash Memory Filesystems
 24.	Compressed Filesystems
 25.	Real-Time Extensions
+
+Wayland
+gst-launch-0.10 playbin2 uri=file://home/root/MVI_0135.MOV video-sink="lmwaylandsink dx=100 dy=100"
+gst-launch-0.10 playbin2 uri=file://home/root/509853_0000_01_Quicktime_standard_MediaClip_01.mov video-sink="lmwaylandsink dw=990 dh=540 dx=20 dy=0 layer-id=4 surface-id=70"
+gst-inspect lmwaylandsink
+
+
+
+
+
+1. Boot PCSIM.
+2. Do below configs:
+systemctl start layer-management-wayland.service
+sleep 1
+export XDG_RUNTIME_DIR=/tmp
+export LM_PLUGIN_PATH=/usr/lib/layermanager
+LayerManagerControl create layer 3000 800 480
+LayerManagerControl set screen 0 render order 3000
+LayerManagerControl set layer 3000 visibility 1
+LayerManagerControl get scene
+
+3. Try below commands:
+gst-launch playbin2 uri=file:///media/AAM_dev_sdb2/playable/oss_011_libtheora_1280x720_6M.mkv
+gst-launch playbin2 uri=file:///media/AAM_dev_sdb2/playable/oss_011_libtheora_1280x720_6M.mkv video-sink="lmwaylandsink"
+gst-launch videotestsrc ! lmwaylandsink
+
+working :
+systemctl start layer-management-wayland.service
+sleep 1
+export XDG_RUNTIME_DIR=/tmp
+export LM_PLUGIN_PATH=/usr/lib/layermanager
+LayerManagerControl set screen 0 render order 3000,10000
+LayerManagerControl set layer 3000 visibility 1
+ LayerManagerControl set layer 10000 opacity 0.2
+LayerManagerControl set layer 3000 destination region 110 80 2000 1000 
+gst-launch videotestsrc ! lmwaylandsink
+
+h264 codec
+/home/dus5cob/gitweb/H-264/videolan/x264/x264_0.148.2597+gite86f3a1-1_i386.deb
+ffmpeg codec:
+
+/home/dus5cob/gitweb/H-264/videolan/ffmpeg/ffmpeg_201508250700-git-1_i386.deb
+
+gstremear plugins
+
+export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+
+ ./configure --prefix="$prefix" --disable-nls --disable-static --with-html-dir=/tmp/dump
+ make 
+ make install
+ 
+  105
+down vote
+	
+Create a backup of what packages are currently installed:
+dpkg --get-selections > list.txt
+
+Then (on another system) restore installations from that list:
+dpkg --clear-selections
+sudo dpkg --set-selections < list.txt
+
+To get rid of stale packages
+sudo apt-get autoremove
+
+to reinstall and install :
+sudo apt-get install --reinstall package
+
+
+check the dependencies of packages in the repository:*
+* apt-cache showpkg package-name
+
+You can use apt-cache rdepends jetty to see what depends on jetty
+
+This will show you all the information about the installed debian package:
+* dpkg -I package.deb
+
+list of installed debian package 
+ls /var/cache/apt/archives
+
+
+gst commands
+gst-launch -v videotestsrc pattern=ball ! ximagesink
+ gst-launch playbin uri=file:///home/dus5cob/samba/ccstg/LSIM_DEMO/SampleVideo_1080x720_1mb.flv
+ gst-launch playbin uri=file:///home/dus5cob/samba/ccstg/LSIM_DEMO/MVI_2815_640x480_30fps.AVI
+ gst-launch-0.10 playbin2 uri=http://docs.gstreamer.com/media/sintel_trailer-480p.webm
+ 
+
+ 32 bit OS
+ mpeg-4 aac and h.264 decoder -> libavcodec54 
+sudo apt-get -y install gstreamer0.10-pitfdll gstreamer0.10-ffmpeg gstreamer0.10-plugins-bad gstreamer0.10-plugins-bad-multiverse gstreamer0.10-plugins-ugly gstreamer0.10-plugins-ugly-multiverse
+
+64 bit OS
+sudo apt-get -y install gstreamer0.10-ffmpeg gstreamer0.10-plugins-bad gstreamer0.10-plugins-bad-multiverse gstreamer0.10-plugins-ugly gstreamer0.10-plugins-ugly-multiverse
+
